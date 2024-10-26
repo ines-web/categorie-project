@@ -34,6 +34,14 @@ services:
     ports:
       - 127.0.0.1:8080:8080
 
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    # If you want to expose these ports outside your dev PC,
+    # remove the "127.0.0.1:" prefix
+    ports:
+      - 127.0.0.1:4200:80
 
   keycloak:
     image: quay.io/keycloak/keycloak:22.0.1
