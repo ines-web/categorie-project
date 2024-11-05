@@ -26,7 +26,7 @@ class CategorieTest {
     }
 
     @Test
-    void pidParentTest() {
+    void pidParentTest() throws Exception {
         Categorie categorie = getCategorieRandomSampleGenerator();
         Categorie categorieBack = getCategorieRandomSampleGenerator();
 
@@ -38,7 +38,7 @@ class CategorieTest {
     }
 
     @Test
-    void categorieTest() {
+    void categorieTest() throws Exception {
         Categorie categorie = getCategorieRandomSampleGenerator();
         Categorie categorieBack = getCategorieRandomSampleGenerator();
 
