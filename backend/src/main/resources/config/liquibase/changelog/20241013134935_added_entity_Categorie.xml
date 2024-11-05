@@ -17,6 +17,9 @@
             <column name="nom" type="varchar(255)">
                 <constraints nullable="false" />
             </column>
+            <column name="creation_date" type="date">
+                <constraints nullable="true" />
+            </column>
             <column name="pid_parent_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -42,6 +45,7 @@
                   usePreparedStatements="true">
             <column name="id" type="numeric"/>
             <column name="nom" type="string"/>
+            <column name="creation_date" type="date"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
