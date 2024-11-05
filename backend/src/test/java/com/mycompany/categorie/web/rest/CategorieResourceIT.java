@@ -13,9 +13,10 @@ import com.mycompany.categorie.IntegrationTest;
 import com.mycompany.categorie.domain.Categorie;
 import com.mycompany.categorie.repository.CategorieRepository;
 import jakarta.persistence.EntityManager;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ class CategorieResourceIT {
 
     private static final String DEFAULT_NOM = "AAAAAAAAAA";
     private static final String UPDATED_NOM = "BBBBBBBBBB";
+
+    private static final LocalDate DEFAULT_CREATION_DATE = LocalDate.ofEpochDay(0L);
+    private static final LocalDate UPDATED_CREATION_DATE = LocalDate.now(ZoneId.systemDefault());
 
     private static final String ENTITY_API_URL = "/api/categories";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
@@ -56,16 +60,15 @@ class CategorieResourceIT {
 
     private Categorie categorie;
 
-    private Categorie insertedCategorie;
-
     /**
      * Create an entity for this test.
      *
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Categorie createEntity() {
-        return new Categorie().nom(DEFAULT_NOM);
+    public static Categorie createEntity(EntityManager em) {
+        Categorie categorie = new Categorie().nom(DEFAULT_NOM).creation_date(DEFAULT_CREATION_DATE);
+        return categorie;
     }
 
     /**
@@ -74,21 +77,14 @@ class CategorieResourceIT {
      * This is a static method, as tests for other entities might also need it,
      * if they test an entity which requires the current entity.
      */
-    public static Categorie createUpdatedEntity() {
-        return new Categorie().nom(UPDATED_NOM);
+    public static Categorie createUpdatedEntity(EntityManager em) {
+        Categorie categorie = new Categorie().nom(UPDATED_NOM).creation_date(UPDATED_CREATION_DATE);
+        return categorie;
     }
 
     @BeforeEach
     public void initTest() {
-        categorie = createEntity();
-    }
-
-    @AfterEach
-    public void cleanup() {
-        if (insertedCategorie != null) {
-            categorieRepository.delete(insertedCategorie);
-            insertedCategorie = null;
-        }
+        categorie = createEntity(em);
     }
 
     @Test
@@ -109,8 +105,6 @@ class CategorieResourceIT {
         // Validate the Categorie in the database
         assertIncrementedRepositoryCount(databaseSizeBeforeCreate);
         assertCategorieUpdatableFieldsEquals(returnedCategorie, getPersistedCategorie(returnedCategorie));
-
-        insertedCategorie = returnedCategorie;
     }
 
     @Test
@@ -150,7 +144,7 @@ class CategorieResourceIT {
     @Transactional
     void getAllCategories() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         // Get all the categorieList
         restCategorieMockMvc
@@ -158,14 +152,15 @@ class CategorieResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(categorie.getId().intValue())))
-            .andExpect(jsonPath("$.[*].nom").value(hasItem(DEFAULT_NOM)));
+            .andExpect(jsonPath("$.[*].nom").value(hasItem(DEFAULT_NOM)))
+            .andExpect(jsonPath("$.[*].creation_date").value(hasItem(DEFAULT_CREATION_DATE.toString())));
     }
 
     @Test
     @Transactional
     void getCategorie() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         // Get the categorie
         restCategorieMockMvc
@@ -173,7 +168,8 @@ class CategorieResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(categorie.getId().intValue()))
-            .andExpect(jsonPath("$.nom").value(DEFAULT_NOM));
+            .andExpect(jsonPath("$.nom").value(DEFAULT_NOM))
+            .andExpect(jsonPath("$.creation_date").value(DEFAULT_CREATION_DATE.toString()));
     }
 
     @Test
@@ -187,7 +183,7 @@ class CategorieResourceIT {
     @Transactional
     void putExistingCategorie() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -195,7 +191,7 @@ class CategorieResourceIT {
         Categorie updatedCategorie = categorieRepository.findById(categorie.getId()).orElseThrow();
         // Disconnect from session so that the updates on updatedCategorie are not directly saved in db
         em.detach(updatedCategorie);
-        updatedCategorie.nom(UPDATED_NOM);
+        updatedCategorie.nom(UPDATED_NOM).creation_date(UPDATED_CREATION_DATE);
 
         restCategorieMockMvc
             .perform(
@@ -270,13 +266,15 @@ class CategorieResourceIT {
     @Transactional
     void partialUpdateCategorieWithPatch() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
         // Update the categorie using partial update
         Categorie partialUpdatedCategorie = new Categorie();
         partialUpdatedCategorie.setId(categorie.getId());
+
+        partialUpdatedCategorie.nom(UPDATED_NOM).creation_date(UPDATED_CREATION_DATE);
 
         restCategorieMockMvc
             .perform(
@@ -300,7 +298,7 @@ class CategorieResourceIT {
     @Transactional
     void fullUpdateCategorieWithPatch() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         long databaseSizeBeforeUpdate = getRepositoryCount();
 
@@ -308,7 +306,7 @@ class CategorieResourceIT {
         Categorie partialUpdatedCategorie = new Categorie();
         partialUpdatedCategorie.setId(categorie.getId());
 
-        partialUpdatedCategorie.nom(UPDATED_NOM);
+        partialUpdatedCategorie.nom(UPDATED_NOM).creation_date(UPDATED_CREATION_DATE);
 
         restCategorieMockMvc
             .perform(
@@ -386,7 +384,7 @@ class CategorieResourceIT {
     @Transactional
     void deleteCategorie() throws Exception {
         // Initialize the database
-        insertedCategorie = categorieRepository.saveAndFlush(categorie);
+        categorieRepository.saveAndFlush(categorie);
 
         long databaseSizeBeforeDelete = getRepositoryCount();
 

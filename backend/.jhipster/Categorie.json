@@ -7,6 +7,10 @@
       "fieldName": "nom",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "creation_date",
+      "fieldType": "LocalDate"
     }
   ],
   "name": "Categorie",

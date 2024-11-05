@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,6 +27,9 @@ public class Categorie implements Serializable {
     @NotNull
     @Column(name = "nom", nullable = false)
     private String nom;
+
+    @Column(name = "creation_date")
+    private LocalDate creation_date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnoreProperties(value = { "pidParent", "categories" }, allowSetters = true)
@@ -61,6 +65,19 @@ public class Categorie implements Serializable {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public LocalDate getCreation_date() {
+        return this.creation_date;
+    }
+
+    public Categorie creation_date(LocalDate creation_date) {
+        this.setCreation_date(creation_date);
+        return this;
+    }
+
+    public void setCreation_date(LocalDate creation_date) {
+        this.creation_date = creation_date;
     }
 
     public Categorie getPidParent() {
@@ -132,6 +149,7 @@ public class Categorie implements Serializable {
         return "Categorie{" +
             "id=" + getId() +
             ", nom='" + getNom() + "'" +
+            ", creation_date='" + getCreation_date() + "'" +
             "}";
     }
 }

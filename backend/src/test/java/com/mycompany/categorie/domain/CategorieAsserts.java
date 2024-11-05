@@ -47,7 +47,8 @@ public class CategorieAsserts {
     public static void assertCategorieUpdatableFieldsEquals(Categorie expected, Categorie actual) {
         assertThat(expected)
             .as("Verify Categorie relevant properties")
-            .satisfies(e -> assertThat(e.getNom()).as("check nom").isEqualTo(actual.getNom()));
+            .satisfies(e -> assertThat(e.getNom()).as("check nom").isEqualTo(actual.getNom()))
+            .satisfies(e -> assertThat(e.getCreation_date()).as("check creation_date").isEqualTo(actual.getCreation_date()));
     }
 
     /**
