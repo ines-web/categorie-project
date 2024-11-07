@@ -1,6 +1,7 @@
 package com.mycompany.categorie.web.rest;
 
 import com.mycompany.categorie.domain.Categorie;
+import com.mycompany.categorie.service.dto.CategorieDTO;
 import com.mycompany.categorie.repository.CategorieRepository;
 import com.mycompany.categorie.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
@@ -10,6 +11,9 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -149,11 +153,35 @@ public class CategorieResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categories in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<Categorie>> getAllCategories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
+    public ResponseEntity<List<CategorieDTO>> getAllCategories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
         LOG.debug("REST request to get a page of Categories");
         Page<Categorie> page = categorieRepository.findAll(pageable);
+
+        // Transformation de la liste de catégories en DTO
+        List<CategorieDTO> categorieDTOs = page.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        return ResponseEntity.ok().headers(headers).body(categorieDTOs);
+    }
+
+    // Convertir une catégorie en CategorieDTO
+    private CategorieDTO convertToDTO(Categorie categorie) {
+        CategorieDTO categorieDTO = new CategorieDTO();
+        categorieDTO.setId(categorie.getId());
+        categorieDTO.setNom(categorie.getNom());
+        categorieDTO.setDateCreation(categorie.getCreation_date());
+
+        // Vérifier si la catégorie est une catégorie racine
+        categorieDTO.setEstRacine(categorie.getPidParent() == null);
+
+        // Récupérer les catégories enfants et leur nombre
+        Set<CategorieDTO> childrenDTOs = categorie.getCategories().stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toSet());
+        categorieDTO.setCategoriesEnfants(childrenDTOs);
+        categorieDTO.setNombreEnfants(childrenDTOs.size());
+
+        return categorieDTO;
     }
 
     /**
