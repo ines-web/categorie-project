@@ -71,6 +71,7 @@
         <spotless-maven-plugin.version>2.43.0</spotless-maven-plugin.version>
         <spring-cloud-dependencies.version>2023.0.3</spring-cloud-dependencies.version>
         <springdoc-openapi-starter-webmvc-api.version>2.6.0</springdoc-openapi-starter-webmvc-api.version>
+      
     </properties>
 
     <dependencyManagement>
@@ -159,6 +160,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
+      <dependency>
+        <groupId>org.springdoc</groupId>
+        <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+        <version>2.6.0</version>
+      </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
@@ -242,6 +248,7 @@
             <artifactId>jaxb-runtime</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -295,6 +302,7 @@
             <artifactId>testcontainers</artifactId>
             <scope>test</scope>
         </dependency>
+
     </dependencies>
 
     <build>
