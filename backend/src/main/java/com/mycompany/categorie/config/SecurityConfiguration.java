@@ -71,7 +71,11 @@ public class SecurityConfiguration {
                     .requestMatchers(mvc.pattern("/api/auth-info")).permitAll()
                     .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
                     .requestMatchers(mvc.pattern("/api/**")).authenticated()
+                    // Ajoutez les lignes suivantes pour Swagger
                     .requestMatchers(mvc.pattern("/v3/api-docs/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/swagger-ui.html")).permitAll()
+
                     .requestMatchers(mvc.pattern("/management/health")).permitAll()
                     .requestMatchers(mvc.pattern("/management/health/**")).permitAll()
                     .requestMatchers(mvc.pattern("/management/info")).permitAll()
