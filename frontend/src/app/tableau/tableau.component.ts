@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CategoryService } from '../category/category.service';  // Le service pour récupérer les catégories
 import { CategorieDTO } from '../category/categorie-dto.model';  // Assure-toi que le modèle CategorieDTO est correct
 import { ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tableau',
@@ -12,7 +13,11 @@ import { ChangeDetectorRef } from '@angular/core';
 export class TableauComponent implements OnInit {
   public tableauData: CategorieDTO[] = [];  // Tableau pour stocker les données des catégories
 
-  constructor(private categoryService: CategoryService, private cdr: ChangeDetectorRef) { }
+  constructor(
+    private categoryService: CategoryService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadCategories();  // Appel de la méthode pour charger les catégories
@@ -31,9 +36,11 @@ export class TableauComponent implements OnInit {
     );
   }
   // Example methods for actions
-  viewCategory(item: any): void {
-    console.log('Viewing category:', item);
-    // Handle view logic here (e.g., navigate to a detail page)
+  viewCategory(item: CategorieDTO): void {
+    const url = this.router.serializeUrl(
+      this.router.createUrlTree(['/category', item.id])
+    );
+    window.open(url, '_blank');
   }
 
   editCategory(item: any): void {
@@ -42,7 +49,7 @@ export class TableauComponent implements OnInit {
   }
 
   deleteCategory(item: CategorieDTO): void {
-    if (confirm(`Are you sure you want to delete category with ID ${item.id}?`)) {
+    if (confirm(`Vous allez supprimer la catégorie :  ${item.nom}?`)) {
       this.categoryService.deleteCategory(item.id).subscribe(
         () => {
           this.tableauData = this.tableauData.filter(category => category.id !== item.id);

@@ -196,18 +196,21 @@ public class CategorieResource {
         return categorieDTO;
     }
 
-    /**
-     * {@code GET  /categories/:id} : get the "id" categorie.
-     *
-     * @param id the id of the categorie to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the categorie, or with status {@code 404 (Not Found)}.
-     */
     @GetMapping("/{id}")
-    public ResponseEntity<Categorie> getCategorie(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Categorie : {}", id);
-        Optional<Categorie> categorie = categorieRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(categorie);
+    public ResponseEntity<CategorieDTO> getCategorieById(@PathVariable Long id) {
+        LOG.debug("REST request to get Category by ID : {}", id);
+
+        // Récupérer la catégorie par son ID
+        Categorie categorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'ID " + id + " n'existe pas."));
+
+        // Convertir la catégorie en DTO
+        CategorieDTO categorieDTO = convertToDTO(categorie);
+
+        return ResponseEntity.ok(categorieDTO);
     }
+
+    
 
     /**
      * {@code DELETE  /categories/:id} : delete the "id" categorie.

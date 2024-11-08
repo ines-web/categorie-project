@@ -17,6 +17,10 @@ export class CategoryService {
     return this.http.get<CategorieDTO[]>(this.apiUrl);
   }
 
+  getCategoryById(id: number): Observable<CategorieDTO> {
+    return this.http.get<CategorieDTO>(`${this.apiUrl}/${id}`);
+  }
+
   // Méthode pour supprimer une catégorie via l'API
   deleteCategory(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
