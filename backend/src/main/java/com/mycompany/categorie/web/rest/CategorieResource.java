@@ -1,6 +1,7 @@
 package com.mycompany.categorie.web.rest;
 
 import com.mycompany.categorie.domain.Categorie;
+import com.mycompany.categorie.exception.ResourceNotFoundException;
 import com.mycompany.categorie.service.dto.CategorieDTO;
 import com.mycompany.categorie.repository.CategorieRepository;
 import com.mycompany.categorie.web.rest.errors.BadRequestAlertException;
@@ -204,14 +205,22 @@ public class CategorieResource {
      * @param id the id of the categorie to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategorie(@PathVariable("id") Long id) {
+    public ResponseEntity<String> deleteCategorie(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Categorie : {}", id);
+
+        Categorie categorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'ID " + id + " n'existe pas."));
+
+        categorieRepository.detachChildCategories(id);
+
         categorieRepository.deleteById(id);
-        return ResponseEntity.noContent()
-            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
-            .build();
+
+        return ResponseEntity.ok("La catégorie avec l'ID " + id + " a été supprimée avec succès.");
     }
+
+
 
 
 
