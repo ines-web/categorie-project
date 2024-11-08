@@ -4,6 +4,7 @@ import com.mycompany.categorie.domain.Categorie;
 import com.mycompany.categorie.exception.ResourceNotFoundException;
 import com.mycompany.categorie.service.dto.CategorieDTO;
 import com.mycompany.categorie.repository.CategorieRepository;
+import com.mycompany.categorie.specification.CategorieSpecification;
 import com.mycompany.categorie.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -21,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -165,17 +168,46 @@ public class CategorieResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categories in body.
      */
     @GetMapping("")
-    public ResponseEntity<List<CategorieDTO>> getAllCategories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of Categories");
-        Page<Categorie> page = categorieRepository.findAll(pageable);
+    public ResponseEntity<List<CategorieDTO>> getAllCategories(
+        @RequestParam(required = false) Boolean estRacine,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationApres,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationAvant,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationDebut,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationFin,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+    ) {
+        LOG.debug("REST request to get a page of Categories with filters");
 
-        // Transformation de la liste de catégories en DTO
-        List<CategorieDTO> categorieDTOs = page.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+        Specification<Categorie> spec = Specification.where(null);
+
+        if (dateCreationApres != null) {
+            spec = spec.and(CategorieSpecification.dateCreationApres(dateCreationApres));
+        }
+
+        if (dateCreationAvant != null) {
+            spec = spec.and(CategorieSpecification.dateCreationAvant(dateCreationAvant));
+        }
+
+        if (dateCreationDebut != null && dateCreationFin != null) {
+            spec = spec.and(CategorieSpecification.dateCreationEntre(dateCreationDebut, dateCreationFin));
+        }
+
+        Page<Categorie> page = categorieRepository.findAll(spec, pageable);
+
+        List<CategorieDTO> categorieDTOs = page.getContent().stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+
+        // Filtrage post-requête pour estRacine
+        if (estRacine != null) {
+            categorieDTOs = categorieDTOs.stream()
+                .filter(dto -> dto.isEstRacine() == estRacine)
+                .collect(Collectors.toList());
+        }
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(categorieDTOs);
     }
-
     // Convertir une catégorie en CategorieDTO
     private CategorieDTO convertToDTO(Categorie categorie) {
         CategorieDTO categorieDTO = new CategorieDTO();
@@ -210,7 +242,7 @@ public class CategorieResource {
         return ResponseEntity.ok(categorieDTO);
     }
 
-    
+
 
     /**
      * {@code DELETE  /categories/:id} : delete the "id" categorie.

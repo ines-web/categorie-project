@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient ,HttpParams} from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CategorieDTO } from './categorie-dto.model';  // Assure-toi que le chemin est correct
 
@@ -25,6 +25,25 @@ export class CategoryService {
   deleteCategory(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
-  
+
+  searchCategories(filters: any): Observable<any[]> {
+    let params = new HttpParams();
+
+    if (filters.estRacine !== null) {
+      params = params.append('estRacine', filters.estRacine.toString());
+    }
+    if (filters.dateCreationApres) {
+      params = params.append('dateCreationApres', filters.dateCreationApres);
+    }
+    if (filters.dateCreationAvant) {
+      params = params.append('dateCreationAvant', filters.dateCreationAvant);
+    }
+    if (filters.dateCreationDebut && filters.dateCreationFin) {
+      params = params.append('dateCreationDebut', filters.dateCreationDebut);
+      params = params.append('dateCreationFin', filters.dateCreationFin);
+    }
+
+    return this.http.get<any[]>(`${this.apiUrl}`, { params });
+  }
   
 }
