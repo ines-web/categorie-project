@@ -26,6 +26,7 @@ public class Categorie implements Serializable {
 
     @NotNull
     @Column(name = "nom", nullable = false)
+    @NotBlank(message = "Le nom de la catégorie est obligatoire.")
     private String nom;
 
     @Column(name = "creation_date")
