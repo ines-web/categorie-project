@@ -3,6 +3,7 @@ import {CanActivateFn, RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from "./login/login.component";
 import {AuthGuard} from "./authentication/auth.guard";
 import {SecuredComponent} from "./secured/secured.component";
+import { TableauComponent } from './tableau/tableau.component';
 
 const isAuthenticated: CanActivateFn = (route, state) => {
   return inject(AuthGuard).isAccessAllowed(route, state);
@@ -20,7 +21,8 @@ const routes: Routes = [
   },
   {
     path: '**', redirectTo: 'login'
-  }
+  },
+  { path: 'accueil', component: TableauComponent } 
 ];
 
 @NgModule({
