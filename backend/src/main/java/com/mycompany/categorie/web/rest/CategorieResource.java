@@ -34,6 +34,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RestController
 @RequestMapping("/api/categories")
 @Transactional
+@CrossOrigin(origins = "http://localhost:4200")
 public class CategorieResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(CategorieResource.class);
