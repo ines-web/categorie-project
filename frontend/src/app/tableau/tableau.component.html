@@ -1,0 +1,46 @@
+<div class="container mt-3">
+  <h2>Tableau des catégories</h2>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Date de Création</th>
+        <th>Nombre d'Enfants</th>
+        <th>Enfants</th>
+        <th>Actions</th> <!-- New column for actions -->
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of tableauData">
+        <td>{{ item.nom }}</td>
+        <td>{{ item.dateCreation | date:'dd/MM/yyyy' }}</td>
+        <td>{{ item.nombreEnfants }}</td>
+        <td>
+          <!-- Afficher les enfants, s'il y en a -->
+          <ul *ngIf="item.categoriesEnfants.length > 0">
+            <li *ngFor="let enfant of item.categoriesEnfants">
+              {{ enfant.nom }} 
+            </li>
+          </ul>
+          <!-- Si aucun enfant, afficher un message -->
+          <span *ngIf="item.categoriesEnfants.length === 0">Aucun enfant</span>
+        </td>
+        <td>
+          <!-- Action buttons (Edit, Delete, View, etc.) -->
+          <button class="btn btn-sm btn-primary" (click)="viewCategory(item)">
+            <i class="fas fa-eye"></i> <!-- View icon -->
+          </button>
+          <button class="btn btn-sm btn-warning" (click)="editCategory(item)">
+            <i class="fas fa-edit"></i> <!-- Edit icon -->
+          </button>
+          <button class="btn btn-sm btn-danger" (click)="deleteCategory(item)">
+            <i class="fas fa-trash-alt"></i> <!-- Delete icon -->
+          </button>
+          <button class="btn btn-sm btn-info" (click)="infoCategory(item)">
+            <i class="fas fa-info-circle"></i> <!-- Info icon -->
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

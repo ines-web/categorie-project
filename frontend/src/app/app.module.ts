@@ -10,6 +10,8 @@ import {KachelComponent} from "./common/kachel/kachel.component";
 import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
 import {MatButtonModule} from "@angular/material/button";
+import { TableauComponent } from './tableau/tableau.component';
+import { NavbarComponent } from './navbar/navbar.component';
 
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -29,9 +31,11 @@ function initializeKeycloak(keycloak: KeycloakService) {
 @NgModule({ declarations: [
         AppComponent,
         LoginComponent,
-        SecuredComponent
+        SecuredComponent,
+        TableauComponent
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
+        NavbarComponent,
         AppRoutingModule,
         BrowserAnimationsModule,
         KachelComponent,
