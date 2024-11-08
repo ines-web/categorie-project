@@ -5,7 +5,7 @@ import { CategorieDTO } from './category/categorie-dto.model'; // Modèle DTO qu
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.Scss']
 })
 export class AppComponent implements OnInit {
   public categories: CategorieDTO[] = [];  // Données des catégories à afficher dans la navbar

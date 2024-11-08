@@ -207,19 +207,23 @@ public class CategorieResource {
      */
     @Transactional
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategorie(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> deleteCategorie(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Categorie : {}", id);
+
 
         Categorie categorie = categorieRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'ID " + id + " n'existe pas."));
 
+        // Détacher les catégories enfants
         categorieRepository.detachChildCategories(id);
 
+        // Supprimer la catégorie
         categorieRepository.deleteById(id);
 
-        return ResponseEntity.ok("La catégorie avec l'ID " + id + " a été supprimée avec succès.");
+        return ResponseEntity.noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
+            .build();
     }
-
 
 
 
