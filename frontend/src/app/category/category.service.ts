@@ -8,7 +8,7 @@ import { CategorieDTO } from './categorie-dto.model';  // Assure-toi que le chem
 })
 export class CategoryService {
 
-  private apiUrl = 'http://localhost:8080/api/categories';  // URL de l'API pour récupérer les catégories
+  private apiUrl = 'http://localhost:8080/api/categories';  // URL de l'API pour les catégories
 
   constructor(private http: HttpClient) { }
 
@@ -16,4 +16,11 @@ export class CategoryService {
   getCategories(): Observable<CategorieDTO[]> {
     return this.http.get<CategorieDTO[]>(this.apiUrl);
   }
+
+  // Méthode pour supprimer une catégorie via l'API
+  deleteCategory(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+  
+  
 }

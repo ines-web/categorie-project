@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -61,10 +62,19 @@ public class CategorieResource {
     @PostMapping("")
     public ResponseEntity<Categorie> createCategorie(@Valid @RequestBody Categorie categorie) throws URISyntaxException {
         LOG.debug("REST request to save Categorie : {}", categorie);
+
         if (categorie.getId() != null) {
             throw new BadRequestAlertException("A new categorie cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Ensure creation_date is set to the current date if not already provided
+        if (categorie.getCreation_date() == null) {
+            categorie.setCreation_date(LocalDate.now());
+        }
+
+        // Save the category
         categorie = categorieRepository.save(categorie);
+
         return ResponseEntity.created(new URI("/api/categories/" + categorie.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, categorie.getId().toString()))
             .body(categorie);
