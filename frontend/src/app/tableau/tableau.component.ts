@@ -3,11 +3,15 @@ import { CategoryService } from '../category/category.service';  // Le service p
 import { CategorieDTO } from '../category/categorie-dto.model';  // Assure-toi que le modèle CategorieDTO est correct
 import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { CategorieSearchComponent } from '../categorie-search/categorie-search.component'; // Chemin correct vers votre composant
 
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
-  styleUrls: ['./tableau.component.scss']
+  styleUrls: ['./tableau.component.scss'],
+  standalone: true, // Assurez-vous que votre tableau est également un composant autonome
+  imports: [CommonModule, CategorieSearchComponent] 
 
 })
 export class TableauComponent implements OnInit {
@@ -60,6 +64,44 @@ export class TableauComponent implements OnInit {
         }
       );
     }
+  }
+  filters = {
+    estRacine: null,
+    dateCreationApres: null,
+    dateCreationAvant: null,
+    dateCreationDebut: null,
+    dateCreationFin: null
+  };
+  selectedFilter = 'after'; 
+  
+  onFilterChange() {
+    // Réinitialiser les filtres non utilisés
+    if (this.selectedFilter === 'after') {
+      this.filters.dateCreationAvant = null;
+      this.filters.dateCreationDebut = null;
+      this.filters.dateCreationFin = null;
+    } else if (this.selectedFilter === 'before') {
+      this.filters.dateCreationApres = null;
+      this.filters.dateCreationDebut = null;
+      this.filters.dateCreationFin = null;
+    } else if (this.selectedFilter === 'range') {
+      this.filters.dateCreationApres = null;
+      this.filters.dateCreationAvant = null;
+    }
+  }
+
+  onSearch(filters: any) {
+    console.log('Filtres de recherche reçus:', filters);
+  
+    // Appel au service pour rechercher les catégories en fonction des filtres
+    this.categoryService.searchCategories(filters).subscribe(
+      (results) => {
+        this.tableauData = results; // Mettez à jour les données du tableau avec les résultats
+      },
+      (error) => {
+        console.error('Erreur lors de la recherche:', error);
+      }
+    );
   }
   
   

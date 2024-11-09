@@ -14,6 +14,8 @@ import { MatButtonModule } from "@angular/material/button";
 import { TableauComponent } from './tableau/tableau.component';
 import { NavbarComponent } from './navbar/navbar.component';
 import { CategoryDetailsComponent } from './category-details/category-details.component';
+import { CategorieSearchComponent } from './categorie-search/categorie-search.component';
+import { FormsModule } from '@angular/forms';
 
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -34,11 +36,14 @@ function initializeKeycloak(keycloak: KeycloakService) {
         AppComponent,
         LoginComponent,
         SecuredComponent,
-        TableauComponent,
-        CategoryDetailsComponent
+        
+        CategoryDetailsComponent,
+        
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         NavbarComponent,
+        TableauComponent,
+        FormsModule,
         CommonModule,
         AppRoutingModule,
         BrowserAnimationsModule,

@@ -1,0 +1,38 @@
+<form (ngSubmit)="onSearch()" class="search-form">
+  <div class="checkbox-container">
+    <label for="estRacine">Est racine :</label>
+    <input type="checkbox" id="estRacine" [(ngModel)]="filters.estRacine" name="estRacine">
+  </div>
+
+  <div class="filter-options">
+    <label>Type de filtre par date :</label>
+    <select [(ngModel)]="selectedFilter" (ngModelChange)="onFilterChange()" name="filterType">
+      <option value="after">Date de création après</option>
+      <option value="before">Date de création avant</option>
+      <option value="range">Intervalle de dates</option>
+    </select>
+  </div>
+
+  <div *ngIf="selectedFilter === 'after'">
+    <label for="dateCreationApres">Date de création après :</label>
+    <input type="date" id="dateCreationApres" [(ngModel)]="filters.dateCreationApres" name="dateCreationApres">
+  </div>
+
+  <div *ngIf="selectedFilter === 'before'">
+    <label for="dateCreationAvant">Date de création avant :</label>
+    <input type="date" id="dateCreationAvant" [(ngModel)]="filters.dateCreationAvant" name="dateCreationAvant">
+  </div>
+
+  <div *ngIf="selectedFilter === 'range'">
+    <div>
+      <label for="dateCreationDebut">Date de création début :</label>
+      <input type="date" id="dateCreationDebut" [(ngModel)]="filters.dateCreationDebut" name="dateCreationDebut">
+    </div>
+    <div>
+      <label for="dateCreationFin">Date de création fin :</label>
+      <input type="date" id="dateCreationFin" [(ngModel)]="filters.dateCreationFin" name="dateCreationFin">
+    </div>
+  </div>
+
+  <button type="submit">Rechercher</button>
+</form>

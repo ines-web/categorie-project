@@ -1,0 +1,119 @@
+// Styles pour le formulaire de recherche
+.search-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; // Espace entre les éléments du formulaire
+    padding: 20px;
+    background-color: #f4f7fc; // Couleur d'arrière-plan
+    border-radius: 12px; // Coins arrondis
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); // Ombre portée plus marquée
+    transition: all 0.3s ease; // Transition douce pour l'ombre
+  
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); // Ombre portée au survol
+      transform: translateY(-2px); // Légère élévation au survol
+    }
+  
+    .checkbox-container {
+      display: flex;
+      align-items: center;
+      gap: 10px; // Espace entre la case à cocher et le label
+  
+      label {
+        font-weight: bold; // Met en gras l'étiquette
+        color: #333; // Couleur du texte
+        font-size: 1rem; // Taille de la police
+      }
+  
+      input[type='checkbox'] {
+        transform: scale(1.2); // Agrandir le checkbox pour une meilleure visibilité
+        cursor: pointer; // Changer le curseur au survol
+      }
+    }
+  
+    .filter-options {
+      display: flex;
+      flex-direction: column;
+  
+      label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px; // Espace sous l'étiquette
+      }
+  
+      select {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #e1e6f0;
+  
+        &:focus {
+          outline: none;
+          border-color: #007bff;
+          box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+      }
+    }
+  
+    .date-fields,
+    .date-range-fields {
+      display: flex;
+      justify-content: space-between; // Aligner les champs sur la même ligne
+      gap: 15px; // Espace entre les champs
+  
+      div {
+        flex: 1; // Chaque champ prend une part égale de l'espace disponible
+  
+        label {
+          display: block; // Étiquette au-dessus du champ
+          font-weight: bold; // Met en gras les étiquettes
+          color: #333; // Couleur du texte
+          margin-bottom: 5px; // Espace sous l'étiquette
+        }
+  
+        input[type='date'] {
+          padding: 10px; // Espacement interne pour les champs de date
+          border-radius: 8px; // Coins arrondis
+          border: 1px solid #e1e6f0;
+  
+          &:focus {
+            outline: none; // Retirer le contour par défaut
+            border-color: #007bff; // Changer la couleur de la bordure au focus
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); // Ombre portée au focus
+          }
+        }
+      }
+    }
+  
+    button[type='submit'] {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 1rem;
+      border: none;
+      background-color: #007bff; // Couleur primaire
+      color: white;
+  
+      cursor: pointer;
+  
+      &:hover {
+        background-color: #0056b3; // Couleur au survol
+        transform: translateY(-2px); 
+        transition: background-color .3s ease, transform .3s ease;
+      }
+  
+      &:focus {
+        outline: none;
+        box-shadow: 0 0 0 .2rem rgba(0,123,255,.25); 
+      }
+      
+      &.disabled {
+        background-color: #d6d6d6; 
+        cursor:not-allowed; 
+        
+        &:hover {
+          background-color:#d6d6d6 !important; 
+          transform:none !important; 
+        }
+      }
+  }
+
+}
