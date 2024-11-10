@@ -48,5 +48,18 @@ export class CategoryService {
   createCategory(category: { nom: string }): Observable<CategorieDTO> {
     return this.http.post<CategorieDTO>(this.apiUrl, category);
   }
-  
+
+
+  associateCategoryToParent(childId: number, parentId: number | null): Observable<CategorieDTO> {
+    if (parentId === null) {
+      // Si parentId est null, on envoie une requête pour dissocier la catégorie de son parent
+      return this.http.put<CategorieDTO>(`${this.apiUrl}/${childId}/dissociate`, {});
+    } else {
+      // Sinon, on associe la catégorie au parent spécifié
+      return this.http.put<CategorieDTO>(`${this.apiUrl}/${childId}/parent/${parentId}`, {});
+    }
+  }
+  getPotentialParents(childId: number): Observable<CategorieDTO[]> {
+    return this.http.get<CategorieDTO[]>(`${this.apiUrl}/potential-parents/${childId}`);
+  }
 }

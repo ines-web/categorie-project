@@ -6,18 +6,21 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CategorieSearchComponent } from '../categorie-search/categorie-search.component'; // Chemin correct vers votre composant
 import { CreateCategoryPopupComponent } from '../create-category-popup/create-category-popup.component';
-
+import { AssociateCategoryPopupComponent } from '../associate-category-popup/associate-category-popup.component';
+import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
   styleUrls: ['./tableau.component.scss'],
   standalone: true, // Assurez-vous que votre tableau est également un composant autonome
-  imports: [CommonModule, CategorieSearchComponent, CreateCategoryPopupComponent]
+  imports: [CommonModule, CategorieSearchComponent, CreateCategoryPopupComponent,AssociateCategoryPopupComponent ,FormsModule,]
 
 })
 export class TableauComponent implements OnInit {
   public tableauData: CategorieDTO[] = [];  // Tableau pour stocker les données des catégories
   isPopupVisible = false;
+  isAssociatePopupVisible = false;
+  selectedChild: CategorieDTO | null = null;
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
@@ -116,11 +119,33 @@ export class TableauComponent implements OnInit {
   }
   
   
-  
-  
+   // Ouvrir le popup pour associer une catégorie enfant
+   openAssociatePopup(item: CategorieDTO): void {
+    this.selectedChild = item;
+    this.isAssociatePopupVisible = true;
+  }
 
-  infoCategory(item: any): void {
-    console.log('Category info:', item);
-    // Show info about the category
+  closeAssociatePopup(): void {
+    this.isAssociatePopupVisible = false;
+    this.selectedChild = null;
+  }
+
+  onAssociateCategory(parentId: number | null): void {
+    if (this.selectedChild) {
+      this.categoryService.associateCategoryToParent(this.selectedChild.id, parentId).subscribe(
+        () => {
+          console.log(`Catégorie ${this.selectedChild?.nom} ${parentId ? 'associée au parent avec ID ' + parentId : 'dissociée de son parent'}`);
+          this.loadCategories();
+        },
+        error => {
+          console.error('Erreur lors de l\'association/dissociation de la catégorie', error);
+        }
+      );
+    }
+    this.closeAssociatePopup();
+  }
+
+  infoCategory(item: CategorieDTO): void {
+    this.openAssociatePopup(item);
   }
 }

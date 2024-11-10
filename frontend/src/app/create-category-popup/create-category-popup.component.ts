@@ -1,13 +1,15 @@
 import { Component, EventEmitter, Output } from '@angular/core';
 import { CategoryService } from '../category/category.service';
 import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+
 
 @Component({
   selector: 'app-create-category-popup',
   templateUrl: './create-category-popup.component.html',
   styleUrls: ['./create-category-popup.component.scss'],
   standalone: true,
-  imports: [FormsModule]
+  imports: [CommonModule,FormsModule]
 })
 export class CreateCategoryPopupComponent {
   @Output() close = new EventEmitter<void>();

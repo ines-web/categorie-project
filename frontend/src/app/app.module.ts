@@ -15,6 +15,7 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { CommonModule } from '@angular/common'; // Ajoutez cette ligne
 import { CategoryDetailsComponent } from './category-details/category-details.component';
 import { CategorieSearchComponent } from './categorie-search/categorie-search.component';
+import { AssociateCategoryPopupComponent } from './associate-category-popup/associate-category-popup.component';
 import { FormsModule } from '@angular/forms';
 
 
@@ -39,12 +40,14 @@ function initializeKeycloak(keycloak: KeycloakService) {
         CategoryDetailsComponent,
         
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent], 
+    imports: [BrowserModule,
         NavbarComponent,
         AppRoutingModule,
         BrowserAnimationsModule,
         KachelComponent,
-        KeycloakAngularModule,
+        KeycloakAngularModule,    
+        FormsModule,  // Ajoutez FormsModule ici
         TableauComponent,
         MatButtonModule,], providers: [
         {
