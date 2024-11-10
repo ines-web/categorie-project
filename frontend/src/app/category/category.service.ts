@@ -45,5 +45,8 @@ export class CategoryService {
 
     return this.http.get<any[]>(`${this.apiUrl}`, { params });
   }
+  createCategory(category: { nom: string }): Observable<CategorieDTO> {
+    return this.http.post<CategorieDTO>(this.apiUrl, category);
+  }
   
 }

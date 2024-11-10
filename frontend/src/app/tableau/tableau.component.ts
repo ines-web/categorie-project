@@ -5,18 +5,19 @@ import { ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CategorieSearchComponent } from '../categorie-search/categorie-search.component'; // Chemin correct vers votre composant
+import { CreateCategoryPopupComponent } from '../create-category-popup/create-category-popup.component';
 
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
   styleUrls: ['./tableau.component.scss'],
   standalone: true, // Assurez-vous que votre tableau est également un composant autonome
-  imports: [CommonModule, CategorieSearchComponent] 
+  imports: [CommonModule, CategorieSearchComponent, CreateCategoryPopupComponent]
 
 })
 export class TableauComponent implements OnInit {
   public tableauData: CategorieDTO[] = [];  // Tableau pour stocker les données des catégories
-
+  isPopupVisible = false;
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
@@ -24,20 +25,30 @@ export class TableauComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loadCategories();  // Appel de la méthode pour charger les catégories
+    this.loadCategories();
   }
 
-  // Méthode pour récupérer les catégories depuis l'API
   loadCategories(): void {
     this.categoryService.getCategories().subscribe(
-      (data: CategorieDTO[]) => {
-        this.tableauData = data;  // Affectation des données récupérées au tableau
-        this.cdr.detectChanges();
+      data => {
+        this.tableauData = data;
       },
-      (error) => {
+      error => {
         console.error('Erreur lors du chargement des catégories', error);
       }
     );
+  }
+
+  openCreateCategoryPopup(): void {
+    this.isPopupVisible = true;
+  }
+
+  closeCreateCategoryPopup(): void {
+    this.isPopupVisible = false;
+  }
+
+  onCategoryCreated(): void {
+    this.loadCategories();
   }
   // Example methods for actions
   viewCategory(item: CategorieDTO): void {

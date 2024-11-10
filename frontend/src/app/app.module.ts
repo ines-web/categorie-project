@@ -1,18 +1,18 @@
-import { APP_INITIALIZER, NgModule } from '@angular/core';
+import {APP_INITIALIZER, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common'; // Ajoutez cette ligne
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import { SecuredComponent } from './secured/secured.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { KachelComponent } from "./common/kachel/kachel.component";
-import { KeycloakAngularModule, KeycloakService } from "keycloak-angular";
+import {KachelComponent} from "./common/kachel/kachel.component";
+import {KeycloakAngularModule, KeycloakService} from "keycloak-angular";
 import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http";
-import { MatButtonModule } from "@angular/material/button";
+import {MatButtonModule} from "@angular/material/button";
 import { TableauComponent } from './tableau/tableau.component';
 import { NavbarComponent } from './navbar/navbar.component';
+import { CommonModule } from '@angular/common'; // Ajoutez cette ligne
 import { CategoryDetailsComponent } from './category-details/category-details.component';
 import { CategorieSearchComponent } from './categorie-search/categorie-search.component';
 import { FormsModule } from '@angular/forms';
@@ -36,20 +36,17 @@ function initializeKeycloak(keycloak: KeycloakService) {
         AppComponent,
         LoginComponent,
         SecuredComponent,
-        
         CategoryDetailsComponent,
         
     ],
     bootstrap: [AppComponent], imports: [BrowserModule,
         NavbarComponent,
-        TableauComponent,
-        FormsModule,
-        CommonModule,
         AppRoutingModule,
         BrowserAnimationsModule,
         KachelComponent,
         KeycloakAngularModule,
-        MatButtonModule], providers: [
+        TableauComponent,
+        MatButtonModule,], providers: [
         {
             provide: APP_INITIALIZER,
             useFactory: initializeKeycloak,
