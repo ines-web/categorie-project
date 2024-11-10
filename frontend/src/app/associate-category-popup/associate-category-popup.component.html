@@ -1,0 +1,46 @@
+<div class="modal" tabindex="-1" role="dialog" style="display: block;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Associer "{{ childCategory?.nom }}" à un parent</h5>
+        <button type="button" class="close" (click)="closePopup()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group position-relative">
+          <input 
+            type="text" 
+            class="form-control" 
+            [(ngModel)]="searchTerm" 
+            (input)="onSearch()" 
+            placeholder="Rechercher une catégorie..."
+            aria-label="Rechercher une catégorie"
+          >
+          <ul class="list-group position-absolute w-100 mt-1" *ngIf="filteredCategories.length > 0 || searchTerm === ''">
+            <li 
+              class="list-group-item list-group-item-action" 
+              (click)="selectCategory(null)"
+              [class.active]="selectedParentId === null"
+            >
+              Aucun (pas de parent)
+            </li>
+            <li 
+              class="list-group-item list-group-item-action" 
+              *ngFor="let category of filteredCategories" 
+              (click)="selectCategory(category.id)"
+              [class.active]="selectedParentId === category.id"
+            >
+              {{ category.nom }}
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closePopup()">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="onAssociate()">Associer</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>
