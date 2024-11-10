@@ -353,4 +353,50 @@ public class CategorieResource {
             .body(updatedCategorie);
     }
 
+    @GetMapping("/potential-parents/{childId}")
+    public ResponseEntity<List<CategorieDTO>> getPotentialParents(@PathVariable Long childId) {
+        LOG.debug("REST request to get potential parent categories for child: {}", childId);
+
+        List<Categorie> allCategories = categorieRepository.findAll();
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child category not found", ENTITY_NAME, "idnotfound"));
+
+        List<CategorieDTO> potentialParents = allCategories.stream()
+            .filter(cat -> !isDescendantOf(cat, childCategorie) && !cat.getId().equals(childId))
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+
+        return ResponseEntity.ok().body(potentialParents);
+    }
+
+    private boolean isDescendantOf(Categorie potentialParent, Categorie child) {
+        Categorie current = child;
+        while (current.getPidParent() != null) {
+            if (current.getPidParent().getId().equals(potentialParent.getId())) {
+                return true;
+            }
+            current = current.getPidParent();
+        }
+        return false;
+    }
+    @PutMapping("/{childId}/dissociate")
+    public ResponseEntity<Categorie> dissociateChildFromParent(@PathVariable Long childId) {
+        LOG.debug("REST request to dissociate Categorie child : {} from its parent", childId);
+
+        Optional<Categorie> childCategorieOpt = categorieRepository.findById(childId);
+
+        if (childCategorieOpt.isEmpty()) {
+            throw new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Categorie childCategorie = childCategorieOpt.get();
+        childCategorie.setPidParent(null);
+
+        categorieRepository.save(childCategorie);
+
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, childCategorie.getId().toString()))
+            .body(childCategorie);
+    }
+
 }
