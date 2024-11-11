@@ -3,8 +3,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Associer "{{ childCategory?.nom }}" à un parent</h5>
-        <button type="button" class="close" (click)="closePopup()" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+        <button type="button" class="btn btn-close" (click)="closePopup()" aria-label="Close">
+        
         </button>
       </div>
       <div class="modal-body">
@@ -14,10 +14,12 @@
             class="form-control" 
             [(ngModel)]="searchTerm" 
             (input)="onSearch()" 
+            (focus)="onFocus()" 
+            (blur)="onBlur()"
             placeholder="Rechercher une catégorie..."
             aria-label="Rechercher une catégorie"
           >
-          <ul class="list-group position-absolute w-100 mt-1" *ngIf="filteredCategories.length > 0 || searchTerm === ''">
+          <ul class="list-group position-absolute w-100 mt-1" *ngIf="isDropdownOpen && filteredCategories.length > 0">
             <li 
               class="list-group-item list-group-item-action" 
               (click)="selectCategory(null)"

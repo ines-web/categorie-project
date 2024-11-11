@@ -8,6 +8,7 @@ import { CategorieSearchComponent } from '../categorie-search/categorie-search.c
 import { CreateCategoryPopupComponent } from '../create-category-popup/create-category-popup.component';
 import { AssociateCategoryPopupComponent } from '../associate-category-popup/associate-category-popup.component';
 import { FormsModule } from '@angular/forms';
+import { ErrorService } from '../error-popup/error.service';
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
@@ -24,9 +25,8 @@ export class TableauComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
-    private router: Router
-  ) { }
-
+    private router: Router, 
+    private errorService: ErrorService) {}
   ngOnInit(): void {
     this.loadCategories();
   }
@@ -37,7 +37,7 @@ export class TableauComponent implements OnInit {
         this.tableauData = data;
       },
       error => {
-        console.error('Erreur lors du chargement des catégories', error);
+        this.errorService.errorEvent("Erreur lors de chargement de la catégorie");
       }
     );
   }
@@ -72,9 +72,10 @@ export class TableauComponent implements OnInit {
         () => {
           this.tableauData = this.tableauData.filter(category => category.id !== item.id);
           console.log('Catégorie supprimée avec succès, tableau mis à jour.');
+
         },
         (error) => {
-          console.error('Erreur lors de la suppression de la catégorie', error);
+           this.errorService.errorEvent("Erreur lors de la suppression de la catégorie");
         }
       );
     }
@@ -107,19 +108,19 @@ export class TableauComponent implements OnInit {
   onSearch(filters: any) {
     console.log('Filtres de recherche reçus:', filters);
   
-    // Appel au service pour rechercher les catégories en fonction des filtres
+   
     this.categoryService.searchCategories(filters).subscribe(
       (results) => {
-        this.tableauData = results; // Mettez à jour les données du tableau avec les résultats
+        this.tableauData = results; 
       },
       (error) => {
-        console.error('Erreur lors de la recherche:', error);
+        this.errorService.errorEvent("Erreur lors de la recherche de la catégorie");
       }
     );
   }
   
   
-   // Ouvrir le popup pour associer une catégorie enfant
+
    openAssociatePopup(item: CategorieDTO): void {
     this.selectedChild = item;
     this.isAssociatePopupVisible = true;

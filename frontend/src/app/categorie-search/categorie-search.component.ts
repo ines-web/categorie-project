@@ -2,6 +2,7 @@ import { Component, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CategoryService } from '../category/category.service';
+import { ErrorService } from '../error-popup/error.service';
 
 @Component({
   selector: 'app-categorie-search',
@@ -23,7 +24,7 @@ export class CategorieSearchComponent {
 
   selectedFilter = 'after'; // Valeur par défaut
 
-  constructor(private categorieService: CategoryService) {}
+  constructor(private categorieService: CategoryService ,private errorService: ErrorService) {}
 
   onFilterChange() {
     // Réinitialiser les filtres non utilisés

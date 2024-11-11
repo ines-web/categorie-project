@@ -6,6 +6,7 @@ import { CommonModule } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { ErrorService } from '../error-popup/error.service';
 
 @Component({
   selector: 'app-associate-category-popup',
@@ -24,9 +25,9 @@ export class AssociateCategoryPopupComponent implements OnInit {
   filteredCategories: CategorieDTO[] = [];
   selectedParentId: number | null = null;
   searchTerm: string = '';
-  isDropdownOpen: boolean = false;  // Nouvelle variable pour gérer l'affichage du dropdown
+  isDropdownOpen: boolean = false; 
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService, private errorService: ErrorService) {}
 
   ngOnInit() {
     if (this.childCategory) {
@@ -41,8 +42,9 @@ export class AssociateCategoryPopupComponent implements OnInit {
           this.potentialParents = data;
           this.filteredCategories = [...this.potentialParents];
         },
-        (error) => console.error('Erreur lors du chargement des catégories potentielles', error)
+        (error) => this.errorService.errorEvent("Erreur lors du chargement des catégories potentielles")
       );
+     
     }
   }
 
@@ -50,23 +52,23 @@ export class AssociateCategoryPopupComponent implements OnInit {
     this.filteredCategories = this.potentialParents.filter(cat => 
       cat.nom.toLowerCase().includes(this.searchTerm.toLowerCase())
     );
-    this.isDropdownOpen = true;  // Affiche le dropdown lorsque l'utilisateur commence à taper
+    this.isDropdownOpen = true;  
   }
 
   selectCategory(categoryId: number | null) {
     this.selectedParentId = categoryId;
     this.searchTerm = categoryId === null ? 'Aucun (pas de parent)' : 
       this.potentialParents.find(cat => cat.id === categoryId)?.nom || '';
-    this.isDropdownOpen = false;  // Ferme le dropdown après sélection
+    this.isDropdownOpen = false;  
   }
 
   onFocus() {
-    this.isDropdownOpen = true;  // Affiche le dropdown lorsque le champ est en focus
+    this.isDropdownOpen = true; 
   }
 
   onBlur() {
     setTimeout(() => {
-      this.isDropdownOpen = false;  // Ferme le dropdown après un petit délai lorsque le champ perd le focus
+      this.isDropdownOpen = false; 
     }, 200);
   }
 

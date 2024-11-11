@@ -12,11 +12,12 @@ import { provideHttpClient, withInterceptorsFromDi } from "@angular/common/http"
 import {MatButtonModule} from "@angular/material/button";
 import { TableauComponent } from './tableau/tableau.component';
 import { NavbarComponent } from './navbar/navbar.component';
-import { CommonModule } from '@angular/common'; // Ajoutez cette ligne
+import { CommonModule } from '@angular/common'; 
 import { CategoryDetailsComponent } from './category-details/category-details.component';
 import { CategorieSearchComponent } from './categorie-search/categorie-search.component';
 import { AssociateCategoryPopupComponent } from './associate-category-popup/associate-category-popup.component';
 import { FormsModule } from '@angular/forms';
+import { ErrorPopupComponent } from './error-popup/error-popup.component';
 
 
 function initializeKeycloak(keycloak: KeycloakService) {
@@ -47,8 +48,9 @@ function initializeKeycloak(keycloak: KeycloakService) {
         BrowserAnimationsModule,
         KachelComponent,
         KeycloakAngularModule,    
-        FormsModule,  // Ajoutez FormsModule ici
+        FormsModule, 
         TableauComponent,
+        ErrorPopupComponent,
         MatButtonModule,], providers: [
         {
             provide: APP_INITIALIZER,
