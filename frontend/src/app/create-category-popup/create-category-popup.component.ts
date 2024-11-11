@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { CategoryService } from '../category/category.service';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ErrorService } from '../error-popup/error.service';
 
 
 @Component({
@@ -16,7 +17,7 @@ export class CreateCategoryPopupComponent {
   @Output() categoryCreated = new EventEmitter<void>();
   categoryName: string = '';
 
-  constructor(private categoryService: CategoryService) {}
+  constructor(private categoryService: CategoryService, private errorService: ErrorService) {}
 
   onSubmit(): void {
     if (this.categoryName) {
@@ -26,7 +27,7 @@ export class CreateCategoryPopupComponent {
           this.closePopup();
         },
         error => {
-          console.error('Erreur lors de la création de la catégorie', error);
+          this.errorService.errorEvent("Erreur lors de la création de la catégorie");
         }
       );
     }

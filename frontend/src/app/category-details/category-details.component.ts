@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { CategoryService } from '../category/category.service';
 import { CategorieDTO } from '../category/categorie-dto.model';
 import { CommonModule } from '@angular/common'; 
+import { ErrorService } from '../error-popup/error.service';
 
 @Component({
   selector: 'app-category-details',
@@ -15,7 +16,7 @@ export class CategoryDetailsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private categoryService: CategoryService
-  ) { }
+    , private errorService: ErrorService) {} 
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -30,7 +31,7 @@ export class CategoryDetailsComponent implements OnInit {
         this.category = data;
       },
       (error) => {
-        console.error('Erreur lors du chargement de la catégorie', error);
+        this.errorService.errorEvent("Erreur lors du chargement de la catégorie");
       }
     );
   }
