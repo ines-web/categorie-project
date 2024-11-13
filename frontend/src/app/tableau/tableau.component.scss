@@ -140,7 +140,7 @@
   }
   
   span {
-    color: #777;
+    color: #fff;
     font-style: italic;
     font-size: 0.9rem;
   }
@@ -149,5 +149,28 @@
   button:focus {
     outline: none;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  }
+
+  th {
+    background-color: #007bff;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative; // Ajout de cette ligne
+    padding-right: 30px; // Augmentation du padding à droite pour l'icône
+
+    // Nouveau style pour le texte
+    span {
+      float: left; // Aligne le texte à gauche
+    }
+
+    // Nouveau style pour l'icône
+    i {
+      position: absolute; // Position absolue par rapport au th
+      right: 10px; // Distance de 10px du bord droit
+      top: 50%; // Centré verticalement
+      transform: translateY(-50%); // Ajustement pour un centrage parfait
+      cursor: pointer; // Curseur de type pointeur pour indiquer qu'il est cliquable
+    }
   }
   

@@ -9,13 +9,23 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th>Nom</th>
-              <th>Date de Création</th>
-              <th>Nombre d'Enfants</th>
+              <th>
+                <span>Nom</span>
+                <i class="fas fa-sort" (click)="sortBy('nom')"></i>
+              </th>
+              <th>
+                <span>Date de Création</span>
+                <i class="fas fa-sort" (click)="sortBy('dateCreation')"></i>
+              </th>
+              <th>
+                <span>Nombre d'Enfants</span>
+                <i class="fas fa-sort" (click)="sortBy('nombreEnfants')"></i>
+              </th>
               <th>Enfants</th>
-              <th>Actions</th> <!-- New column for actions -->
+              <th>Actions</th>
             </tr>
           </thead>
+          
           <tbody>
             <tr *ngFor="let item of tableauData | paginate: { itemsPerPage: 10, currentPage: page }">
               <td>{{ item.nom }}</td>

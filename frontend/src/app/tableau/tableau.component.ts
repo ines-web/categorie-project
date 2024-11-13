@@ -24,6 +24,8 @@ export class TableauComponent implements OnInit {
   isPopupVisible = false;
   isAssociatePopupVisible = false;
   selectedChild: CategorieDTO | null = null;
+  sortColumn: string = 'nom'; // Colonne de tri par défaut
+  sortDirection: 'asc' | 'desc' = 'asc'; // Direction de tri par défau
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
@@ -151,5 +153,19 @@ export class TableauComponent implements OnInit {
 
   infoCategory(item: CategorieDTO): void {
     this.openAssociatePopup(item);
+  }
+
+  sortBy(column: string) {
+    if (this.sortColumn === column) {
+      // Si on clique sur la même colonne, on inverse la direction du tri
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Si on change de colonne, on réinitialise la direction à 'asc'
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    // Appliquer le tri
+    this.tableauData = this.categoryService.sortCategories(this.tableauData, this.sortColumn, this.sortDirection);
   }
 }

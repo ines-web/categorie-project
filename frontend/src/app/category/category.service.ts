@@ -62,4 +62,18 @@ export class CategoryService {
   getPotentialParents(childId: number): Observable<CategorieDTO[]> {
     return this.http.get<CategorieDTO[]>(`${this.apiUrl}/potential-parents/${childId}`);
   }
+
+  sortCategories(categories: CategorieDTO[], column: string, direction: 'asc' | 'desc'): CategorieDTO[] {
+    return [...categories].sort((a, b) => {
+      let comparison = 0;
+      if (column === 'nom') {
+        comparison = a.nom.localeCompare(b.nom);
+      } else if (column === 'dateCreation') {
+        comparison = new Date(a.dateCreation).getTime() - new Date(b.dateCreation).getTime();
+      } else if (column === 'nombreEnfants') {
+        comparison = a.nombreEnfants - b.nombreEnfants;
+      }
+      return direction === 'asc' ? comparison : -comparison;
+    });
+  }
 }
