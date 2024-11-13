@@ -11,10 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -174,29 +171,38 @@ public class CategorieResource {
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationAvant,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationDebut,
         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationFin,
-        @org.springdoc.core.annotations.ParameterObject Pageable pageable
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(defaultValue = "dateCreation") String sortBy, // Paramètre pour le tri
+        @RequestParam(defaultValue = "asc") String sortDirection
     ) {
         LOG.debug("REST request to get a page of Categories with filters");
 
+
         Specification<Categorie> spec = Specification.where(null);
+
 
         if (dateCreationApres != null) {
             spec = spec.and(CategorieSpecification.dateCreationApres(dateCreationApres));
         }
 
+
         if (dateCreationAvant != null) {
             spec = spec.and(CategorieSpecification.dateCreationAvant(dateCreationAvant));
         }
+
 
         if (dateCreationDebut != null && dateCreationFin != null) {
             spec = spec.and(CategorieSpecification.dateCreationEntre(dateCreationDebut, dateCreationFin));
         }
 
+
         Page<Categorie> page = categorieRepository.findAll(spec, pageable);
+
 
         List<CategorieDTO> categorieDTOs = page.getContent().stream()
             .map(this::convertToDTO)
             .collect(Collectors.toList());
+
 
         // Filtrage post-requête pour estRacine
         if (estRacine != null) {
@@ -205,9 +211,28 @@ public class CategorieResource {
                 .collect(Collectors.toList());
         }
 
+
+        if ("nombreEnfants".equals(sortBy)) {
+            Comparator<CategorieDTO> comparator = "desc".equals(sortDirection) ?
+                Comparator.comparing(CategorieDTO::getNombreEnfants).reversed() :
+                Comparator.comparing(CategorieDTO::getNombreEnfants);
+
+
+            categorieDTOs.sort(comparator);
+        } else {
+            // Tri sur d'autres attributs comme "dateCreation"
+            if ("desc".equals(sortDirection)) {
+                categorieDTOs.sort(Comparator.comparing(CategorieDTO::getDateCreation).reversed());
+            } else {
+                categorieDTOs.sort(Comparator.comparing(CategorieDTO::getDateCreation));
+            }
+        }
+
+
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(categorieDTOs);
     }
+
     // Convertir une catégorie en CategorieDTO
     private CategorieDTO convertToDTO(Categorie categorie) {
         CategorieDTO categorieDTO = new CategorieDTO();

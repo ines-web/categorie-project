@@ -18,7 +18,7 @@ import { CategorieSearchComponent } from './categorie-search/categorie-search.co
 import { AssociateCategoryPopupComponent } from './associate-category-popup/associate-category-popup.component';
 import { FormsModule } from '@angular/forms';
 import { ErrorPopupComponent } from './error-popup/error-popup.component';
-
+import { NgxPaginationModule } from 'ngx-pagination';
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -43,6 +43,7 @@ function initializeKeycloak(keycloak: KeycloakService) {
     ],
     bootstrap: [AppComponent], 
     imports: [BrowserModule,
+        NgxPaginationModule,
         NavbarComponent,
         AppRoutingModule,
         BrowserAnimationsModule,
