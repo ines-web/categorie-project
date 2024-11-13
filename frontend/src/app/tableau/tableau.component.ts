@@ -9,16 +9,18 @@ import { CreateCategoryPopupComponent } from '../create-category-popup/create-ca
 import { AssociateCategoryPopupComponent } from '../associate-category-popup/associate-category-popup.component';
 import { FormsModule } from '@angular/forms';
 import { ErrorService } from '../error-popup/error.service';
+import { NgxPaginationModule } from 'ngx-pagination';
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
   styleUrls: ['./tableau.component.scss'],
   standalone: true, // Assurez-vous que votre tableau est également un composant autonome
-  imports: [CommonModule, CategorieSearchComponent, CreateCategoryPopupComponent,AssociateCategoryPopupComponent ,FormsModule,]
+  imports: [CommonModule, NgxPaginationModule,CategorieSearchComponent, CreateCategoryPopupComponent,AssociateCategoryPopupComponent ,FormsModule,]
 
 })
 export class TableauComponent implements OnInit {
   public tableauData: CategorieDTO[] = [];  // Tableau pour stocker les données des catégories
+  page: number = 1;
   isPopupVisible = false;
   isAssociatePopupVisible = false;
   selectedChild: CategorieDTO | null = null;
@@ -35,6 +37,7 @@ export class TableauComponent implements OnInit {
     this.categoryService.getCategories().subscribe(
       data => {
         this.tableauData = data;
+        this.cdr.detectChanges();
       },
       error => {
         this.errorService.errorEvent("Erreur lors de chargement de la catégorie");
