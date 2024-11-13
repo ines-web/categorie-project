@@ -1,0 +1,62 @@
+// Variables pour les couleurs
+$primary-color: #007bff;
+$secondary-color: #f8f9fa;
+$hover-color: #0056b3;
+$active-color: #004085;
+
+
+.navbar {
+    background-color: $secondary-color;
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid $primary-color;
+  
+    .nav-link {
+      color: $primary-color;
+      font-weight: bold;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      transition: color 0.3s, background-color 0.3s;
+  
+      &:hover {
+        color: $secondary-color;
+        background-color: $hover-color;
+        border-radius: 5px;
+      }
+    }
+  
+    // Style du bouton logout
+    .btn-logout {
+      background-color: $primary-color;
+      color: $secondary-color;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      margin-left: auto; // Pousse le bouton à droite
+  
+      &:hover {
+        background-color: $hover-color;
+      }
+    }
+  }
+  
+// Style de base pour la barre de navigation
+
+
+// Responsive
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+
+    .navbar-nav {
+      width: 100%;
+      text-align: center;
+
+      .nav-item {
+        margin: 0.5rem 0;
+      }
+    }
+  }
+}
