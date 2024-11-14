@@ -95,7 +95,7 @@ public class CategorieResource {
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Categorie categorie
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Categorie : {}, {}", id, categorie);
+        LOG.debug("REST request update Categorie : {}, {}", id, categorie);
         if (categorie.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
@@ -106,8 +106,28 @@ public class CategorieResource {
         if (!categorieRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
+        Optional<Categorie> existingCategorieOpt = categorieRepository.findById(id);
+        if (existingCategorieOpt.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+        Categorie existingCategorie = existingCategorieOpt.get();
 
-        categorie = categorieRepository.save(categorie);
+        if (categorie.getNom() != null) {
+            existingCategorie.setNom(categorie.getNom());
+        }
+
+        if (categorie.getPidParent() != null) {
+            Optional<Categorie> parentCategorieOpt = categorieRepository.findById(categorie.getPidParent().getId());
+            if (parentCategorieOpt.isPresent()) {
+                existingCategorie.setPidParent(parentCategorieOpt.get());
+            } else {
+                throw new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound");
+            }
+        } else {
+            existingCategorie.setPidParent(null); // Supprimer le parent s'il est défini à null
+        }
+
+        categorie = categorieRepository.save(existingCategorie);
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, categorie.getId().toString()))
             .body(categorie);
