@@ -24,10 +24,10 @@ export class CategorieSearchComponent {
 
   selectedFilter = 'after'; // Valeur par défaut
 
-  constructor(private categorieService: CategoryService ,private errorService: ErrorService) {}
+  constructor(private categorieService: CategoryService, private errorService: ErrorService) {}
 
   onFilterChange() {
-    // Réinitialiser les filtres non utilisés
+    // Réinitialiser les filtres non utilisés en fonction du filtre sélectionné
     if (this.selectedFilter === 'after') {
       this.filters.dateCreationAvant = null;
       this.filters.dateCreationDebut = null;
@@ -45,5 +45,24 @@ export class CategorieSearchComponent {
   onSearch() {
     // Émettre les filtres au parent
     this.searchEvent.emit(this.filters);
+  }
+
+  resetSettings(): void {
+    // Réinitialiser les filtres à leur valeur par défaut
+    this.filters = {
+      estRacine: null,
+      dateCreationApres: null,
+      dateCreationAvant: null,
+      dateCreationDebut: null,
+      dateCreationFin: null
+    };
+  
+    // Réinitialiser le filtre sélectionné
+    this.selectedFilter = 'after';
+  
+    // Émettre l'événement avec les filtres réinitialisés
+    this.searchEvent.emit(this.filters);
+
+    console.log('Paramètres réinitialisés et recherche lancée');
   }
 }
