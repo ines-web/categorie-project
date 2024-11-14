@@ -7,13 +7,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ErrorService } from '../error-popup/error.service';
+import { NgSelectModule } from '@ng-select/ng-select'; 
 
 @Component({
   selector: 'app-associate-category-popup',
   templateUrl: './associate-category-popup.component.html',
   styleUrls: ['./associate-category-popup.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule]
+  imports: [CommonModule, FormsModule, MatAutocompleteModule, MatFormFieldModule, MatInputModule,NgSelectModule]
   
 })
 export class AssociateCategoryPopupComponent implements OnInit {
@@ -35,41 +36,50 @@ export class AssociateCategoryPopupComponent implements OnInit {
     }
   }
 
-  loadPotentialParents() {
-    if (this.childCategory) {
-      this.categoryService.getPotentialParents(this.childCategory.id).subscribe(
-        (data) => {
-          this.potentialParents = data;
-          this.filteredCategories = [...this.potentialParents];
-        },
-        (error) => this.errorService.errorEvent("Erreur lors du chargement des catégories potentielles")
-      );
-     
-    }
-  }
+  private loadPotentialParents(): void {
+    if (!this.childCategory) return;
 
-  onSearch() {
-    this.filteredCategories = this.potentialParents.filter(cat => 
-      cat.nom.toLowerCase().includes(this.searchTerm.toLowerCase())
+    this.categoryService.getPotentialParents(this.childCategory.id).subscribe(
+      (categories) => {
+        this.potentialParents = categories;
+        this.filteredCategories = [...this.potentialParents];
+      },
+      () => this.errorService.errorEvent('Erreur lors du chargement des catégories potentielles.')
     );
-    this.isDropdownOpen = true;  
   }
 
-  selectCategory(categoryId: number | null) {
+  onSearch(): void {
+    const search = this.searchTerm.trim().toLowerCase();
+    this.filteredCategories = this.potentialParents.filter((cat) =>
+      cat.nom.toLowerCase().includes(search)
+    );
+    this.isDropdownOpen = this.filteredCategories.length > 0;
+  }
+
+  selectCategory(categoryId: number | null): void {
     this.selectedParentId = categoryId;
-    this.searchTerm = categoryId === null ? 'Aucun (pas de parent)' : 
-      this.potentialParents.find(cat => cat.id === categoryId)?.nom || '';
-    this.isDropdownOpen = false;  
+    this.searchTerm =
+      categoryId === null
+        ? 'Aucun (pas de parent)'
+        : this.potentialParents.find((cat) => cat.id === categoryId)?.nom || '';
+    this.closeDropdown();
   }
 
-  onFocus() {
-    this.isDropdownOpen = true; 
+  onFocus(): void {
+    this.isDropdownOpen = this.filteredCategories.length > 0;
   }
 
-  onBlur() {
-    setTimeout(() => {
-      this.isDropdownOpen = false; 
-    }, 200);
+  getCategoryLabel(categoryId: number): string {
+    const category = this.potentialParents.find(cat => cat.id === categoryId);
+    return category ? category.nom : '';
+  }
+  
+  onBlur(): void {
+    setTimeout(() => this.closeDropdown(), 150);
+  }
+
+  private closeDropdown(): void {
+    this.isDropdownOpen = false;
   }
 
   onAssociate() {

@@ -1,6 +1,6 @@
 import {APP_INITIALIZER, NgModule} from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
+import { NgSelectModule } from '@ng-select/ng-select';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
@@ -19,6 +19,7 @@ import { AssociateCategoryPopupComponent } from './associate-category-popup/asso
 import { FormsModule } from '@angular/forms';
 import { ErrorPopupComponent } from './error-popup/error-popup.component';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { RouterModule } from '@angular/router';
 
 function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
@@ -44,6 +45,8 @@ function initializeKeycloak(keycloak: KeycloakService) {
     bootstrap: [AppComponent], 
     imports: [BrowserModule,
         NgxPaginationModule,
+        RouterModule,
+        NgSelectModule,
         NavbarComponent,
         AppRoutingModule,
         BrowserAnimationsModule,

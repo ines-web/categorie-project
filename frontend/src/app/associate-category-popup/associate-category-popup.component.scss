@@ -1,7 +1,78 @@
-.popup {
-  /* Styles pour le popup */
-  background-color: white;
-  border: 1px solid #ddd;
-  padding: 20px;
-  border-radius: 8px;
+/* Styles pour ng-select */
+.ng-select {
+  width: 100%;
+}
+
+.ng-select .ng-select-container {
+  border-radius: 4px;
+  border: 1px solid #ced4da;
+  min-height: 38px;
+}
+
+.ng-select.ng-select-focused:not(.ng-select-opened) > .ng-select-container {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Styles pour le panneau déroulant */
+.ng-dropdown-panel {
+  border: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+}
+
+.ng-dropdown-panel .ng-dropdown-panel-items {
+  padding: 5px 0;
+}
+
+.ng-dropdown-panel .ng-option {
+  padding: 8px 12px;
+  font-size: 14px;
+}
+
+.ng-dropdown-panel .ng-option.ng-option-marked {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.ng-dropdown-panel .ng-option.ng-option-selected {
+  background-color: #007bff;
+  color: white;
+}
+
+/* Style pour le placeholder */
+.ng-select .ng-placeholder {
+  color: #6c757d;
+}
+
+/* Style pour l'icône de la flèche */
+.ng-select .ng-arrow-wrapper {
+  padding-right: 5px;
+}
+
+.ng-select .ng-arrow {
+  border-color: #6c757d transparent transparent;
+  border-style: solid;
+  border-width: 5px 5px 2.5px;
+}
+
+/* Style pour le champ de recherche */
+
+
+::ng-deep .ng-dropdown-panel {
+  background-color: white !important;
+  opacity: 1 !important;
+}
+
+::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items {
+  background-color: white !important;
+}
+
+::ng-deep .ng-dropdown-panel .ng-dropdown-panel-items .ng-option {
+  background-color: white !important;
+  color: black !important;
+}
+
+::ng-deep .ng-dropdown-panel {
+  z-index: 1000 !important;
 }
