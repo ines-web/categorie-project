@@ -14,7 +14,8 @@ export class CategoryService {
 
   // Méthode pour récupérer les catégories depuis l'API
   getCategories(): Observable<CategorieDTO[]> {
-    return this.http.get<CategorieDTO[]>(this.apiUrl);
+  const params = new HttpParams().set('size', '50');
+  return this.http.get<CategorieDTO[]>(this.apiUrl, { params });
   }
 
   getCategoryById(id: number): Observable<CategorieDTO> {

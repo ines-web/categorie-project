@@ -1,29 +1,41 @@
 <form (ngSubmit)="onSearch()" class="search-form">
+  
+<div class="checkbox-container">
   <div class="checkbox-container">
     <label for="estRacine">Est racine :</label>
     <input type="checkbox" id="estRacine" [(ngModel)]="filters.estRacine" name="estRacine">
   </div>
-
   <div class="filter-options">
-    <label>Type de filtre par date :</label>
-    <select [(ngModel)]="selectedFilter" (ngModelChange)="onFilterChange()" name="filterType">
+    <label for="filterType">Type de filtre par date :</label>
+    <select
+      id="filterType"
+      [(ngModel)]="selectedFilter"
+      (ngModelChange)="onFilterChange()"
+      name="filterType"
+    >
       <option value="after">Date de création après</option>
       <option value="before">Date de création avant</option>
       <option value="range">Intervalle de dates</option>
     </select>
   </div>
+  
 
-  <div *ngIf="selectedFilter === 'after'">
-    <label for="dateCreationApres">Date de création après :</label>
-    <input type="date" id="dateCreationApres" [(ngModel)]="filters.dateCreationApres" name="dateCreationApres">
+  <div *ngIf="selectedFilter === 'after'" class="date-fields">
+    <div>
+      <label for="dateCreationApres">Date de création après :</label>
+      <input type="date" id="dateCreationApres" [(ngModel)]="filters.dateCreationApres" name="dateCreationApres">
+    </div>
   </div>
-
-  <div *ngIf="selectedFilter === 'before'">
-    <label for="dateCreationAvant">Date de création avant :</label>
-    <input type="date" id="dateCreationAvant" [(ngModel)]="filters.dateCreationAvant" name="dateCreationAvant">
+  
+  <div *ngIf="selectedFilter === 'before'" class="date-fields">
+    <div>
+      <label for="dateCreationAvant">Date de création avant :</label>
+      <input type="date" id="dateCreationAvant" [(ngModel)]="filters.dateCreationAvant" name="dateCreationAvant">
+    </div>
   </div>
+  
 
-  <div *ngIf="selectedFilter === 'range'">
+  <div *ngIf="selectedFilter === 'range'" class="date-range-fields">
     <div>
       <label for="dateCreationDebut">Date de création début :</label>
       <input type="date" id="dateCreationDebut" [(ngModel)]="filters.dateCreationDebut" name="dateCreationDebut">
@@ -33,6 +45,11 @@
       <input type="date" id="dateCreationFin" [(ngModel)]="filters.dateCreationFin" name="dateCreationFin">
     </div>
   </div>
-
+</div>
+<div class="checkbox-container">
   <button type="submit">Rechercher</button>
+  
+  <button type="button" class="btn btn-warning" (click)="resetSettings()">Réinitialiser les paramètres</button>
+</div>
+  
 </form>

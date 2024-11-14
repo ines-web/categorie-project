@@ -75,16 +75,24 @@ export class TableauComponent implements OnInit {
     if (confirm(`Vous allez supprimer la catégorie :  ${item.nom}?`)) {
       this.categoryService.deleteCategory(item.id).subscribe(
         () => {
-          this.tableauData = this.tableauData.filter(category => category.id !== item.id);
-          console.log('Catégorie supprimée avec succès, tableau mis à jour.');
-
+          // Après la suppression, récupère toutes les catégories à jour
+          this.categoryService.getCategories().subscribe(
+            (categories) => {
+              this.tableauData = categories;  // Mets à jour le tableau avec les catégories récupérées
+              console.log('Catégorie supprimée avec succès, tableau mis à jour.');
+            },
+            (error) => {
+              this.errorService.errorEvent("Erreur lors de la récupération des catégories");
+            }
+          );
         },
         (error) => {
-           this.errorService.errorEvent("Erreur lors de la suppression de la catégorie");
+          this.errorService.errorEvent("Erreur lors de la suppression de la catégorie");
         }
       );
     }
   }
+  
   filters = {
     estRacine: null,
     dateCreationApres: null,
@@ -113,7 +121,7 @@ export class TableauComponent implements OnInit {
   onSearch(filters: any) {
     console.log('Filtres de recherche reçus:', filters);
   
-   
+    this.page = 1;
     this.categoryService.searchCategories(filters).subscribe(
       (results) => {
         this.tableauData = results; 
