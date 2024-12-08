@@ -91,14 +91,16 @@ public class CategorieResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Categorie> updateCategorie(
+    public ResponseEntity<Void> updateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Categorie categorie
     ) throws URISyntaxException {
         LOG.debug("REST request update Categorie : {}, {}", id, categorie);
+
         if (categorie.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
         if (!Objects.equals(id, categorie.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
@@ -106,31 +108,30 @@ public class CategorieResource {
         if (!categorieRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
+
         Optional<Categorie> existingCategorieOpt = categorieRepository.findById(id);
         if (existingCategorieOpt.isEmpty()) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
-        Categorie existingCategorie = existingCategorieOpt.get();
+
+        Categorie existingCategorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
 
         if (categorie.getNom() != null) {
             existingCategorie.setNom(categorie.getNom());
         }
 
         if (categorie.getPidParent() != null) {
-            Optional<Categorie> parentCategorieOpt = categorieRepository.findById(categorie.getPidParent().getId());
-            if (parentCategorieOpt.isPresent()) {
-                existingCategorie.setPidParent(parentCategorieOpt.get());
-            } else {
-                throw new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound");
-            }
+            Categorie parentCategorie = categorieRepository.findById(categorie.getPidParent().getId())
+                .orElseThrow(() -> new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound"));
+            existingCategorie.setPidParent(parentCategorie);
         } else {
-            existingCategorie.setPidParent(null); // Supprimer le parent s'il est défini à null
+            existingCategorie.setPidParent(null);
         }
 
-        categorie = categorieRepository.save(existingCategorie);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, categorie.getId().toString()))
-            .body(categorie);
+        categorieRepository.save(existingCategorie);
+
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 
     /**
@@ -332,19 +333,14 @@ public class CategorieResource {
         LOG.debug("REST request to associate Categorie child : {} with parent : {}", childId, parentId);
 
         // Vérifier si les deux catégories existent
-        Optional<Categorie> childCategorieOpt = categorieRepository.findById(childId);
-        Optional<Categorie> parentCategorieOpt = categorieRepository.findById(parentId);
 
-        if (childCategorieOpt.isEmpty() || parentCategorieOpt.isEmpty()) {
-            throw new BadRequestAlertException("Parent or Child Categorie not found", ENTITY_NAME, "idnotfound");
-        }
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "childidnotfound"));
 
-        // Associer la catégorie parent à la catégorie enfant
-        Categorie childCategorie = childCategorieOpt.get();
-        Categorie parentCategorie = parentCategorieOpt.get();
+        Categorie parentCategorie = categorieRepository.findById(parentId)
+            .orElseThrow(() -> new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound"));
+
         childCategorie.setPidParent(parentCategorie);
-
-        // Sauvegarder la catégorie enfant avec son parent
         categorieRepository.save(childCategorie);
 
         return ResponseEntity.ok()
@@ -356,7 +352,7 @@ public class CategorieResource {
     /// ECAT30
     // URL : PATCH /api/categories/{id}
 
-    @PatchMapping("/{id}")
+    /* @PatchMapping("/{id}")
     public ResponseEntity<Categorie> updateCategorieFields(
         @PathVariable Long id,
         @RequestBody Categorie categorieDetails
@@ -396,7 +392,7 @@ public class CategorieResource {
         return ResponseEntity.ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, existingCategorie.getId().toString()))
             .body(updatedCategorie);
-    }
+    } */
 
     @GetMapping("/potential-parents/{childId}")
     public ResponseEntity<List<CategorieDTO>> getPotentialParents(@PathVariable Long childId) {
@@ -428,15 +424,10 @@ public class CategorieResource {
     public ResponseEntity<Categorie> dissociateChildFromParent(@PathVariable Long childId) {
         LOG.debug("REST request to dissociate Categorie child : {} from its parent", childId);
 
-        Optional<Categorie> childCategorieOpt = categorieRepository.findById(childId);
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "idnotfound"));
 
-        if (childCategorieOpt.isEmpty()) {
-            throw new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Categorie childCategorie = childCategorieOpt.get();
         childCategorie.setPidParent(null);
-
         categorieRepository.save(childCategorie);
 
         return ResponseEntity.ok()

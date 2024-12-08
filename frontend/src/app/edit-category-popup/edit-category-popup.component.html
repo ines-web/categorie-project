@@ -1,0 +1,47 @@
+<div class="modal show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Modifier la catégorie "{{ category?.nom }}"</h5>
+        <button type="button" class="btn-close text-white" (click)="closePopup()" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form *ngIf="editedCategory">
+          <div class="form-group mb-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="nom" 
+              [(ngModel)]="editedCategory.nom" 
+              name="nom" 
+              required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="parent" class="form-label fw-bold text-dark">Modifier Catégorie parente</label>
+            <ng-select
+              [items]="potentialParents"
+              bindLabel="nom"
+              bindValue="id"
+              [(ngModel)]="selectedParentId"
+              [ngModelOptions]="{standalone: true}" 
+              [searchable]="true"
+              [clearable]="true"
+              class="form-control"
+              (change)="onParentChange($event)"
+            >
+              <ng-template ng-option-tmp let-item="item">
+                {{ item.nom }}
+              </ng-template>
+            </ng-select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" (click)="closePopup()">Annuler</button>
+        <button type="button" class="btn btn-primary" (click)="onUpdate()">Mettre à jour</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>

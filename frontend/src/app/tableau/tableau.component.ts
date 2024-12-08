@@ -10,12 +10,13 @@ import { AssociateCategoryPopupComponent } from '../associate-category-popup/ass
 import { FormsModule } from '@angular/forms';
 import { ErrorService } from '../error-popup/error.service';
 import { NgxPaginationModule } from 'ngx-pagination';
+import { EditCategoryPopupComponent } from '../edit-category-popup/edit-category-popup.component';
 @Component({
   selector: 'app-tableau',
   templateUrl: './tableau.component.html',
   styleUrls: ['./tableau.component.scss'],
   standalone: true, // Assurez-vous que votre tableau est également un composant autonome
-  imports: [CommonModule, NgxPaginationModule,CategorieSearchComponent, CreateCategoryPopupComponent,AssociateCategoryPopupComponent ,FormsModule,]
+  imports: [CommonModule, NgxPaginationModule,CategorieSearchComponent, CreateCategoryPopupComponent,AssociateCategoryPopupComponent ,FormsModule,EditCategoryPopupComponent,]
 
 })
 export class TableauComponent implements OnInit {
@@ -26,6 +27,8 @@ export class TableauComponent implements OnInit {
   selectedChild: CategorieDTO | null = null;
   sortColumn: string = 'nom'; // Colonne de tri par défaut
   sortDirection: 'asc' | 'desc' = 'asc'; // Direction de tri par défau
+  isEditPopupVisible = false;
+  selectedCategory: CategorieDTO | null = null;
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
@@ -66,10 +69,6 @@ export class TableauComponent implements OnInit {
     window.open(url, '_blank');
   }
 
-  editCategory(item: any): void {
-    console.log('Editing category:', item);
-    // Handle edit logic here
-  }
 
   deleteCategory(item: CategorieDTO): void {
     if (confirm(`Vous allez supprimer la catégorie :  ${item.nom}?`)) {
@@ -175,5 +174,27 @@ export class TableauComponent implements OnInit {
 
     // Appliquer le tri
     this.tableauData = this.categoryService.sortCategories(this.tableauData, this.sortColumn, this.sortDirection);
+  }
+
+  editCategory(item: CategorieDTO): void {
+    this.selectedCategory = item;
+    this.isEditPopupVisible = true;
+  }
+
+  closeEditCategoryPopup(): void {
+    this.isEditPopupVisible = false;
+    this.selectedCategory = null;
+  }
+
+  onCategoryUpdated(updatedCategory: CategorieDTO): void {
+    this.categoryService.updateCategory(updatedCategory).subscribe(
+      () => {
+        this.loadCategories();
+        this.closeEditCategoryPopup();
+      },
+      error => {
+        this.errorService.errorEvent("Erreur lors de la mise à jour de la catégorie");
+      }
+    );
   }
 }
