@@ -80,5 +80,14 @@
   </app-associate-category-popup>
 </div>
 
+<!-- ... -->
+<app-edit-category-popup 
+  *ngIf="isEditPopupVisible" 
+  [category]="selectedCategory"
+  (close)="closeEditCategoryPopup()"
+  (update)="onCategoryUpdated($event)">
+</app-edit-category-popup>
+<!-- ... -->
+
 
 

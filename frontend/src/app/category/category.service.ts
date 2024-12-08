@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient ,HttpParams} from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CategorieDTO } from './categorie-dto.model';  // Assure-toi que le chemin est correct
 
@@ -14,8 +14,8 @@ export class CategoryService {
 
   // Méthode pour récupérer les catégories depuis l'API
   getCategories(): Observable<CategorieDTO[]> {
-  const params = new HttpParams().set('size', '50');
-  return this.http.get<CategorieDTO[]>(this.apiUrl, { params });
+    const params = new HttpParams().set('size', '50');
+    return this.http.get<CategorieDTO[]>(this.apiUrl, { params });
   }
 
   getCategoryById(id: number): Observable<CategorieDTO> {
@@ -46,10 +46,10 @@ export class CategoryService {
 
     return this.http.get<any[]>(`${this.apiUrl}`, { params });
   }
+
   createCategory(category: { nom: string }): Observable<CategorieDTO> {
     return this.http.post<CategorieDTO>(this.apiUrl, category);
   }
-
 
   associateCategoryToParent(childId: number, parentId: number | null): Observable<CategorieDTO> {
     if (parentId === null) {
@@ -60,6 +60,7 @@ export class CategoryService {
       return this.http.put<CategorieDTO>(`${this.apiUrl}/${childId}/parent/${parentId}`, {});
     }
   }
+
   getPotentialParents(childId: number): Observable<CategorieDTO[]> {
     return this.http.get<CategorieDTO[]>(`${this.apiUrl}/potential-parents/${childId}`);
   }
@@ -76,5 +77,9 @@ export class CategoryService {
       }
       return direction === 'asc' ? comparison : -comparison;
     });
+  }
+
+  updateCategory(category: CategorieDTO): Observable<CategorieDTO> {
+    return this.http.put<CategorieDTO>(`${this.apiUrl}/${category.id}`, category);
   }
 }
