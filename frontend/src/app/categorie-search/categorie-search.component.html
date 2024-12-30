@@ -1,55 +1,92 @@
-<form (ngSubmit)="onSearch()" class="search-form">
-  
-<div class="checkbox-container">
-  <div class="checkbox-container">
-    <label for="estRacine">Est racine :</label>
-    <input type="checkbox" id="estRacine" [(ngModel)]="filters.estRacine" name="estRacine">
+<form (ngSubmit)="onSearch()" class="search-form shadow-lg p-4 bg-light rounded">
+
+  <!-- Est Racine Checkbox -->
+  <div class="form-check mb-3">
+    <input
+      type="checkbox"
+      id="estRacine"
+      class="form-check-input"
+      [(ngModel)]="filters.estRacine"
+      name="estRacine"
+    />
+    <label for="estRacine" class="form-check-label fw-bold">Est racine</label>
   </div>
-  <div class="filter-options">
-    <label for="filterType">Type de filtre par date :</label>
+
+  <!-- Sélection du filtre par date -->
+  <div class="mb-3">
+    <label for="filterType" class="form-label fw-bold">Type de filtre par date :</label>
     <select
       id="filterType"
       [(ngModel)]="selectedFilter"
       (ngModelChange)="onFilterChange()"
       name="filterType"
+      class="form-select"
     >
       <option value="after">Date de création après</option>
       <option value="before">Date de création avant</option>
       <option value="range">Intervalle de dates</option>
     </select>
   </div>
-  
 
-  <div *ngIf="selectedFilter === 'after'" class="date-fields">
-    <div>
-      <label for="dateCreationApres">Date de création après :</label>
-      <input type="date" id="dateCreationApres" [(ngModel)]="filters.dateCreationApres" name="dateCreationApres">
-    </div>
+  <!-- Filtre : Date après -->
+  <div *ngIf="selectedFilter === 'after'" class="mb-3">
+    <label for="dateCreationApres" class="form-label fw-bold">Date de création après :</label>
+    <input
+      type="date"
+      id="dateCreationApres"
+      [(ngModel)]="filters.dateCreationApres"
+      name="dateCreationApres"
+      class="form-control"
+    />
   </div>
-  
-  <div *ngIf="selectedFilter === 'before'" class="date-fields">
-    <div>
-      <label for="dateCreationAvant">Date de création avant :</label>
-      <input type="date" id="dateCreationAvant" [(ngModel)]="filters.dateCreationAvant" name="dateCreationAvant">
-    </div>
-  </div>
-  
 
-  <div *ngIf="selectedFilter === 'range'" class="date-range-fields">
-    <div>
-      <label for="dateCreationDebut">Date de création début :</label>
-      <input type="date" id="dateCreationDebut" [(ngModel)]="filters.dateCreationDebut" name="dateCreationDebut">
+  <!-- Filtre : Date avant -->
+  <div *ngIf="selectedFilter === 'before'" class="mb-3">
+    <label for="dateCreationAvant" class="form-label fw-bold">Date de création avant :</label>
+    <input
+      type="date"
+      id="dateCreationAvant"
+      [(ngModel)]="filters.dateCreationAvant"
+      name="dateCreationAvant"
+      class="form-control"
+    />
+  </div>
+
+  <!-- Filtre : Intervalle de dates -->
+  <div *ngIf="selectedFilter === 'range'" class="row g-3 mb-3">
+    <div class="col">
+      <label for="dateCreationDebut" class="form-label fw-bold">Date de création début :</label>
+      <input
+        type="date"
+        id="dateCreationDebut"
+        [(ngModel)]="filters.dateCreationDebut"
+        name="dateCreationDebut"
+        class="form-control"
+      />
     </div>
-    <div>
-      <label for="dateCreationFin">Date de création fin :</label>
-      <input type="date" id="dateCreationFin" [(ngModel)]="filters.dateCreationFin" name="dateCreationFin">
+    <div class="col">
+      <label for="dateCreationFin" class="form-label fw-bold">Date de création fin :</label>
+      <input
+        type="date"
+        id="dateCreationFin"
+        [(ngModel)]="filters.dateCreationFin"
+        name="dateCreationFin"
+        class="form-control"
+      />
     </div>
   </div>
-</div>
-<div class="checkbox-container">
-  <button type="submit">Rechercher</button>
-  
-  <button type="button" class="btn btn-warning" (click)="resetSettings()">Réinitialiser les paramètres</button>
-</div>
-  
+
+  <!-- Boutons d'actions -->
+  <div class="d-flex justify-content-end gap-3">
+    <button type="submit" class="btn btn-primary shadow-sm">
+      <i class="fas fa-search me-2"></i>Rechercher
+    </button>
+    <button
+      type="button"
+      class="btn btn-warning shadow-sm text-dark"
+      (click)="resetSettings()"
+    >
+      <i class="fas fa-redo me-2"></i>Réinitialiser
+    </button>
+  </div>
 </form>

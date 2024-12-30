@@ -1,126 +1,70 @@
+// Design global du formulaire de recherche
 .search-form {
-  display: flex;
-  flex-direction: column;
-
-}
-
-
-.filter-options {
-  display: flex;
-  flex-direction: column;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 
   label {
-    font-weight: bold;
-    color: #333;
     font-size: 1rem;
+    font-weight: 600;
   }
 
-  select {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #e1e6f0;
-    background-color: white;
-    font-size: 1rem;
-    width: 100%;
+  .form-check-input {
     cursor: pointer;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-select,
+  .form-control {
+    font-size: 0.95rem;
+    border: 1px solid #ced4da;
+    border-radius: 8px;
+    padding: 0.5rem;
+    transition: all 0.2s ease-in;
 
     &:focus {
-      outline: none;
-      border-color: #007bff;
-      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-    &:hover {
-      border-color: #0056b3;
+      box-shadow: 0 0 3px rgba(33, 37, 41, 0.2);
+      border-color: #ffdd57; // Jaune de la palette navbar
     }
   }
-}
 
+  // Boutons
+  .btn-primary {
+    background-color: #121212; // Même couleur que la navbar
+    color: #ffdd57;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in;
 
-.checkbox-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 20px; /* Espacement entre la checkbox et le bouton */
-}
+    &:hover {
+      background-color: #ffdd57;
+      color: #121212;
+      box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.2);
+    }
+  }
 
-button[type="button"] {
-  margin-top: 10px; /* Facultatif, si tu veux ajuster l'espacement du bouton par rapport à son voisin */
-}
+  .btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+    font-size: 1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: all 0.3s ease-in;
 
+    &:hover {
+      background-color: #ffe083;
+      color: #0d6efd;
+    }
+  }
 
-.date-range-fields,
-.date-fields {
-  display: flex;
-  align-items: center;
-  gap: 15px; /* Espace entre les éléments */
-}
+  // Champs de date alignés (si plusieurs)
+  .row > .col {
+    display: flex;
+    flex-direction: column;
 
-.checkbox-container {
-  justify-content: space-between;
-}
-
-.checkbox-container input[type='checkbox'] {
-  transform: scale(1.2);
-  cursor: pointer;
-}
-
-.checkbox-container label,
-.date-range-fields label,
-.date-fields label {
-  font-weight: bold;
-  color: #333;
-  font-size: 1rem;
-}
-
-.date-range-fields,
-.date-fields {
-  justify-content: space-between;
-}
-
-.date-range-fields div,
-.date-fields div {
-  flex: 1;
-}
-
-input[type='date'] {
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #e1e6f0;
-  width: 100%;
-}
-
-input[type='date']:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
-
-button[type="submit"],
-button[type="button"] {
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 1rem;
-  border: none;
-  cursor: pointer;
-}
-
-button[type="submit"] {
-  background-color: #007bff;
-  color: white;
-}
-
-button[type="submit"]:hover {
-  background-color: #0056b3;
-}
-
-button[type="button"] {
-  background-color: #0056b3;
-  color: white;
-}
-
-button[type="button"]:hover {
-  background-color: #007bff;
+    input {
+      font-size: 0.9rem;
+    }
+  }
 }

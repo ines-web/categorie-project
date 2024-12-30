@@ -32,7 +32,7 @@ export class TableauComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private cdr: ChangeDetectorRef,
-    private router: Router, 
+    private router: Router,
     private errorService: ErrorService) {}
   ngOnInit(): void {
     this.loadCategories();
@@ -91,7 +91,7 @@ export class TableauComponent implements OnInit {
       );
     }
   }
-  
+
   filters = {
     estRacine: null,
     dateCreationApres: null,
@@ -99,8 +99,8 @@ export class TableauComponent implements OnInit {
     dateCreationDebut: null,
     dateCreationFin: null
   };
-  selectedFilter = 'after'; 
-  
+  selectedFilter = 'after';
+
   onFilterChange() {
     // Réinitialiser les filtres non utilisés
     if (this.selectedFilter === 'after') {
@@ -119,19 +119,19 @@ export class TableauComponent implements OnInit {
 
   onSearch(filters: any) {
     console.log('Filtres de recherche reçus:', filters);
-  
+
     this.page = 1;
     this.categoryService.searchCategories(filters).subscribe(
       (results) => {
-        this.tableauData = results; 
+        this.tableauData = results;
       },
       (error) => {
         this.errorService.errorEvent("Erreur lors de la recherche de la catégorie");
       }
     );
   }
-  
-  
+
+
 
    openAssociatePopup(item: CategorieDTO): void {
     this.selectedChild = item;

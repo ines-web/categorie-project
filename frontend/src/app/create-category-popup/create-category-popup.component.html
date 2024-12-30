@@ -1,24 +1,57 @@
-<div class="modal" tabindex="-1" role="dialog" style="display: block;">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Créer une nouvelle catégorie</h5>
-          <button type="button" class="btn btn-close" (click)="closePopup()" aria-label="Close">
-          </button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="onSubmit()">
-            <div class="form-group">
-              <label for="categoryName">Nom de la catégorie</label>
-              <input type="text" class="form-control" id="categoryName" [(ngModel)]="categoryName" name="categoryName" required>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" (click)="closePopup()">Annuler</button>
-              <button type="submit" class="btn btn-primary">Créer</button>
-            </div>
-          </form>
-        </div>
+<div class="modal show fade" tabindex="-1" role="dialog" style="display: block; z-index: 1050;">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content shadow rounded">
+      <!-- Header du Modal -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-plus-circle me-2"></i>Créer une nouvelle catégorie
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="closePopup()"
+          aria-label="Close"
+        ></button>
+      </div>
+
+      <!-- Corps du Modal -->
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmit()">
+          <!-- Champ : Nom de la Catégorie -->
+          <div class="mb-4">
+            <label for="categoryName" class="form-label fw-bold">Nom de la catégorie :</label>
+            <input
+              type="text"
+              id="categoryName"
+              [(ngModel)]="categoryName"
+              name="categoryName"
+              class="form-control p-3"
+              placeholder="Entrez le nom de la catégorie"
+              required
+            />
+          </div>
+
+          <!-- Footer du formulaire (Boutons) -->
+          <div class="d-flex justify-content-end gap-3">
+            <button
+              type="button"
+              class="btn btn-secondary rounded-pill shadow-sm px-4"
+              (click)="closePopup()"
+            >
+              <i class="fas fa-times me-2"></i>Annuler
+            </button>
+            <button
+              type="submit"
+              class="btn btn-warning text-dark rounded-pill shadow-sm px-4"
+            >
+              <i class="fas fa-check-circle me-2"></i>Créer
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  <div class="modal-backdrop fade show"></div>
+
+  <!-- Fond semi-transparent pour l'effet modal -->
+  <div class="modal-backdrop fade show" style="z-index: 1040;"></div>
+</div>
