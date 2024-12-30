@@ -29,6 +29,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 /**
  * REST controller for managing {@link com.mycompany.categorie.domain.Categorie}.
@@ -37,6 +40,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/categories")
 @Transactional
 @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Gestion des Catégories", description = "API pour gérer les catégories (création, modification, suppression, recherche, association)")
 public class CategorieResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(CategorieResource.class);
@@ -59,6 +63,8 @@ public class CategorieResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new categorie, or with status {@code 400 (Bad Request)} if the categorie has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Créer une nouvelle catégorie",
+        description = "Permet de créer une nouvelle catégorie. Les informations obligatoires incluent le nom de la catégorie .")
     @PostMapping("")
     public ResponseEntity<Categorie> createCategorie(@Valid @RequestBody Categorie categorie) throws URISyntaxException {
         LOG.debug("REST request to save Categorie : {}", categorie);
@@ -90,6 +96,8 @@ public class CategorieResource {
      * or with status {@code 500 (Internal Server Error)} if the categorie couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Mettre à jour une catégorie existante",
+        description = "Permet de modifier les champs d'une catégorie existante en fournissant un identifiant valide. Le système vérifie si la catégorie existe.")
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
@@ -145,6 +153,8 @@ public class CategorieResource {
      * or with status {@code 500 (Internal Server Error)} if the categorie couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Mettre à jour partiellement une catégorie",
+        description = "Permet de modifier certains champs d'une catégorie existante. Les champs non spécifiés conserveront leurs valeurs actuelles.")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Categorie> partialUpdateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
@@ -185,6 +195,13 @@ public class CategorieResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categories in body.
      */
+    @Operation(summary = "Lister toutes les catégories",
+        description = """
+               Permet de rechercher des catégories avec plusieurs filtres :
+               - Si elles sont des catégories racines (estRacine)
+               - La date de création (après, avant, ou entre deux dates)
+               Possibilité de paginer et trier les résultats par nom, date ou nombre d'enfants.
+               """)
     @GetMapping("")
     public ResponseEntity<List<CategorieDTO>> getAllCategories(
         @RequestParam(required = false) Boolean estRacine,
@@ -273,7 +290,8 @@ public class CategorieResource {
 
         return categorieDTO;
     }
-
+    @Operation(summary = "Récupérer une catégorie par ID",
+        description = "Permet de récupérer les détails d'une catégorie par son identifiant unique. Les relations parent/enfant sont incluses.")
     @GetMapping("/{id}")
     public ResponseEntity<CategorieDTO> getCategorieById(@PathVariable Long id) {
         LOG.debug("REST request to get Category by ID : {}", id);
@@ -296,6 +314,8 @@ public class CategorieResource {
      * @param id the id of the categorie to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @Operation(summary = "Supprimer une catégorie",
+        description = "Permet de supprimer une catégorie existante par son identifiant. Les relations parent/enfant sont prises en compte.")
     @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategorie(@PathVariable("id") Long id) {
@@ -319,12 +339,8 @@ public class CategorieResource {
 
 
 
-
-    ////// mes inventions
-
-    //ECAT20
-    // URL : PUT /api/categories/{childId}/parent/{parentId}
-
+    @Operation(summary = "Associer une catégorie enfant à un parent",
+        description = "Permet d'associer une catégorie enfant à une catégorie parent en utilisant leurs identifiants respectifs. Une catégorie ne peut pas être son propre parent.")
     @PutMapping("/{childId}/parent/{parentId}")
     public ResponseEntity<Categorie> associateChildToParent(
         @PathVariable Long childId,
@@ -348,53 +364,9 @@ public class CategorieResource {
             .body(childCategorie);
     }
 
-
-    /// ECAT30
-    // URL : PATCH /api/categories/{id}
-
-    /* @PatchMapping("/{id}")
-    public ResponseEntity<Categorie> updateCategorieFields(
-        @PathVariable Long id,
-        @RequestBody Categorie categorieDetails
-    ) {
-        LOG.debug("REST request to partially update Categorie : {}", id);
-
-        // Vérifiez que l'ID du corps de la requête n'est pas nul
-        if (categorieDetails.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
-
-        Optional<Categorie> existingCategorieOpt = categorieRepository.findById(id);
-
-        if (existingCategorieOpt.isEmpty()) {
-            throw new BadRequestAlertException("Categorie not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Categorie existingCategorie = existingCategorieOpt.get();
-
-        // Mettre à jour le nom si un nouveau nom est fourni
-        if (categorieDetails.getNom() != null) {
-            existingCategorie.setNom(categorieDetails.getNom());
-        }
-
-        // Mettre à jour la catégorie parent si un nouvel ID parent est fourni
-        if (categorieDetails.getPidParent() != null && categorieDetails.getPidParent().getId() != null) {
-            Optional<Categorie> parentCategorieOpt = categorieRepository.findById(categorieDetails.getPidParent().getId());
-            if (parentCategorieOpt.isEmpty()) {
-                throw new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound");
-            }
-            existingCategorie.setPidParent(parentCategorieOpt.get());
-        }
-
-        // Sauvegarder la catégorie mise à jour
-        Categorie updatedCategorie = categorieRepository.save(existingCategorie);
-
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, existingCategorie.getId().toString()))
-            .body(updatedCategorie);
-    } */
-
-    @GetMapping("/potential-parents/{childId}")
+    @Operation(summary = "Lister les parents potentiels pour une catégorie enfant",
+        description = "Permet de récupérer toutes les catégories qui peuvent devenir le parent d'une catégorie donnée. Empêche les boucles parent/enfant.")
+     @GetMapping("/potential-parents/{childId}")
     public ResponseEntity<List<CategorieDTO>> getPotentialParents(@PathVariable Long childId) {
         LOG.debug("REST request to get potential parent categories for child: {}", childId);
 
@@ -420,6 +392,10 @@ public class CategorieResource {
         }
         return false;
     }
+
+    @Operation(summary = "Dissocier une catégorie enfant de son parent",
+        description = "Permet de dissocier une catégorie enfant de sa catégorie parent associée.")
+
     @PutMapping("/{childId}/dissociate")
     public ResponseEntity<Categorie> dissociateChildFromParent(@PathVariable Long childId) {
         LOG.debug("REST request to dissociate Categorie child : {} from its parent", childId);
