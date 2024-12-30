@@ -1,34 +1,21 @@
-import {inject, Injectable} from '@angular/core';
-import {KeycloakService} from 'keycloak-angular';
-import {from, Observable} from 'rxjs';
-
-export interface AuthConfig {
-  redirectUrlLogin: string;
-  redirectUrlLogout: string;
-}
+import { Injectable } from '@angular/core';
+import { KeycloakService } from 'keycloak-angular';
+import { from, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  keycloak = inject(KeycloakService);
-
-  constructor() {
-    if (this.keycloak.isLoggedIn()) {
-      this.keycloak.getKeycloakInstance().loadUserProfile();
-    }
-
-  }
+  constructor(private keycloak: KeycloakService) {}
 
   public logout(): void {
     this.keycloak.logout("http://localhost:4200/").then();
   }
 
-  login() {
-    this.keycloak.login({redirectUri: "http://localhost:4200/accueil"}).then();
+  login(redirectUri: string = window.location.origin + "/accueil"): void {
+    this.keycloak.login({ redirectUri }).then();
   }
-
 
   isLoggedIn(): boolean {
     return this.keycloak.isLoggedIn();
@@ -39,7 +26,7 @@ export class AuthService {
   }
 
   getId(): string {
-    return this.keycloak?.getKeycloakInstance()?.profile?.id as string;
+    return this.keycloak.getKeycloakInstance().profile?.id as string;
   }
 
   getTokenExpirationDate(): number {

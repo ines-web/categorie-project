@@ -7,7 +7,7 @@
       <p><strong>Est racine:</strong> <span>{{ category.estRacine ? 'Oui' : 'Non' }}</span></p>
       <p><strong>Nombre d'enfants:</strong> <span>{{ category.nombreEnfants }}</span></p>
     </div>
-  
+
     <h3>Catégories enfants:</h3>
     <ul>
       <li *ngFor="let enfant of category.categoriesEnfants">

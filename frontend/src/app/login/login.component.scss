@@ -1,75 +1,150 @@
-// Variables pour personnaliser les couleurs
-$primary-color: #007bff;
-$button-hover-color: #0056b3;
-$button-text-color: #ffffff;
-$background-color: #f4f6f9;
-$shadow-color: rgba(0, 0, 0, 0.15);
+:root {
+  --primary-color: #ffc107;
+  --secondary-color: #ffdd57;
+  --dark-bg: #343a40;
+  --light-color: #ffffff;
+  --text-color: #121212;
+  --shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
+  --border-radius: 12px;
+  --footer-bg-gradient: linear-gradient(to right, #343a40, #495057);
+}
 
-// Animation d'entrée pour le texte et le bouton
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+body {
+  font-family: 'Roboto', sans-serif;
+  background-color: #f5f5f5;
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+}
+
+.page-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+ padding-top:120px;
+}
+
+.content-container {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  padding: 3rem;
+}
+
+.intro {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.welcome-title {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.intro-text {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.features-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.feature-card {
+  flex: 1;
+  background-color: var(--dark-bg);
+  color: var(--light-color);
+  border-radius: 20px; /* Augmenter pour un effet très arrondi */
+  border: 3px solid #eeb108; /* Nouvelle bordure avec la couleur désirée */
+  box-shadow: var(--shadow); /* Conserver l'effet d'ombre existant */
+  padding: 2rem;
+  text-align: center;
+  transition: transform 0.3s ease, background-color 0.3s ease;
+
+  /* Animation légère de la bordure au survol */
+  &:hover {
+    transform: translateY(-5px);
+    background-color: #eeb108;
+    border-color: var(--secondary-color); /* Illustre une transition subtile */
   }
 }
 
-.welcome-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: $background-color;
+
+.icon-wrapper {
+  font-size: 2.5rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.feature-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.feature-description {
+  font-size: 0.9rem;
+  color: var(--light-color);
+}
+
+.cta {
   text-align: center;
-  padding: 0 20px;
+}
 
-  // L'animation est appliquée seulement sur le conteneur une fois au chargement de la page
-  animation: fadeInUp 1s ease-out forwards; 
+.cta .btn-primary {
+  background-color:#ffc107 ; /* Couleur de fond */
+  color: var(--text-color); /* Couleur du texte, noir par défaut */
+  border: 2px solid #343a40; /* Bordure jaune */
+  padding: 1rem 2.5rem; /* Plus grand bouton */
+  font-size: 1.1rem; /* Taille du texte */
+  font-weight: bold;
+  border-radius: 30px;
+  cursor: pointer; /* Curseur interactif */
+  transition: background-color 0.3s ease, transform 0.2s ease, border-color 0.3s ease;
 
-  .welcome-text {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: $primary-color;
-    margin-bottom: 3rem;
-    letter-spacing: 1px;
-    text-transform: uppercase; 
-    // J'ai enlevé l'animation répétée pour le texte ici
 
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1);
+  &:hover {
+    background-color: #ffdd57;
+    border-color: #ffc107;
+    transform: scale(1.05);
   }
+}
 
-  .welcome-button {
-    background-color: $primary-color;
-    color: $button-text-color;
-    padding: 1rem 2.5rem;
-    font-size: 1.4rem;
-    font-weight: 700;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
-    text-transform: uppercase;
 
-    // L'animation est désormais seulement sur le bouton lors du premier affichage
-    animation: fadeInUp 1s ease-out 0.3s forwards; 
+.footer {
+  background: var(--footer-bg-gradient);
+  color: var(--light-color);
+  text-align: center;
+  padding: 2rem;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
 
-    &:hover {
-      background-color: $button-hover-color;
-      transform: scale(1.1);
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-    }
+.footer p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
+}
 
-    &:focus {
-      outline: none;
-    }
+.footer .social-icons {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
 
-    &:active {
-      transform: scale(1.05);
-    }
-  }
+.footer .social-icons a {
+  color: var(--light-color);
+  font-size: 1.5rem;
+  transition: color 0.3s ease;
+}
+
+.footer .social-icons a:hover {
+  color: var(--secondary-color);
 }

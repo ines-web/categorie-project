@@ -1,43 +1,69 @@
-<div class="modal show d-block" tabindex="-1" role="dialog"> 
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content shadow-lg">
-      <div class="modal-header bg-primary text-white">
-        <h5 class="modal-title">Associer "{{ childCategory?.nom }}" à un parent</h5>
+<div class="modal show fade" tabindex="-1" role="dialog" style="display: block; z-index: 1050;">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content shadow rounded">
+      <!-- Header du Modal -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-link me-2"></i>Associer "{{ childCategory?.nom }}" à un parent
+        </h5>
         <button
           type="button"
-          class="btn-close text-white"
+          class="btn-close btn-close-white"
           (click)="closePopup()"
-          aria-label="Close"
+          aria-label="Fermer"
         ></button>
       </div>
+
+      <!-- Corps du Modal -->
       <div class="modal-body">
-        <div class="form-group mb-4">
-          <!-- Affiche le label avec le texte sélectionné ou le texte par défaut -->
-          <label for="category-select" class="form-label fw-bold text-dark">
-            Rechercher ou sélectionner une catégorie
-          </label>
-          <ng-select [ngStyle]="{'background-color': 'white'}"
-            [items]="potentialParents"
-            bindLabel="nom"
-            bindValue="id"
-            [(ngModel)]="selectedParentId"
-            [searchable]="true"
-            [clearable]="true"
-            appendTo="ng-select"
-           
-            class="form-control"
-          >
-            <ng-template ng-option-tmp let-item="item">
-              {{ item.nom }}
-            </ng-template>
-          </ng-select>
-        </div>
+        <form class="mb-0 d-flex flex-column gap-3">
+          <!-- Champ de sélection : Catégorie Parent -->
+          <div class="form-group">
+            <label for="category-select" class="form-label fw-bold text-dark">
+              Rechercher ou sélectionner une catégorie parent :
+            </label>
+
+            <!-- ng-select -->
+            <ng-select
+              [items]="potentialParents"
+              bindLabel="nom"
+              bindValue="id"
+              [(ngModel)]="selectedParentId"
+              [searchable]="true"
+              [clearable]="true"
+              appendTo="body"
+              placeholder="Choisissez une catégorie parent"
+              class="form-control"
+            >
+              <!-- Template personnalisé pour le contenu des options -->
+              <ng-template ng-option-tmp let-item="item">
+                <span class="fw-semibold text-dark">{{ item.nom }}</span>
+              </ng-template>
+            </ng-select>
+          </div>
+        </form>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" (click)="closePopup()">Annuler</button>
-        <button type="button" class="btn btn-primary" (click)="onAssociate()">Associer</button>
+
+      <!-- Pied du Modal -->
+      <div class="modal-footer d-flex justify-content-end gap-3">
+        <button
+          type="button"
+          class="btn btn-secondary rounded-pill shadow-sm px-4"
+          (click)="closePopup()"
+        >
+          <i class="fas fa-times me-2"></i>Annuler
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-primary rounded-pill shadow-sm px-4"
+          (click)="onAssociate()"
+        >
+          <i class="fas fa-link me-2"></i>Associer
+        </button>
       </div>
     </div>
   </div>
 </div>
-<div class="modal-backdrop fade show"></div>
+
+<div class="modal-backdrop fade show" style="z-index: 1040;"></div>
