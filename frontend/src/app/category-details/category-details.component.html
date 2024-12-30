@@ -1,0 +1,17 @@
+<div *ngIf="category" class="category-details">
+    <h2>Détails de la catégorie</h2>
+    <div class="info-group">
+      <p><strong>ID:</strong> <span>{{ category.id }}</span></p>
+      <p><strong>Nom:</strong> <span>{{ category.nom }}</span></p>
+      <p><strong>Date de création:</strong> <span>{{ category.dateCreation }}</span></p>
+      <p><strong>Est racine:</strong> <span>{{ category.estRacine ? 'Oui' : 'Non' }}</span></p>
+      <p><strong>Nombre d'enfants:</strong> <span>{{ category.nombreEnfants }}</span></p>
+    </div>
+
+    <h3>Catégories enfants:</h3>
+    <ul>
+      <li *ngFor="let enfant of category.categoriesEnfants">
+        {{ enfant.nom }} <span class="id">(ID: {{ enfant.id }})</span>
+      </li>
+    </ul>
+  </div>

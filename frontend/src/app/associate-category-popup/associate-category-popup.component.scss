@@ -1,0 +1,116 @@
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1050;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+
+  /* Assure que le modal reste au centre lors de redimensionnements */
+  max-height: 90vh;
+  max-width: 100%;
+}
+
+.modal-dialog {
+  max-width: 800px; /* Taille maximale */
+  margin: 0 auto;
+}
+
+.modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #ffc107;
+  --bs-btn-border-color: rgba(255, 193, 7, 0.91);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: rgba(255, 193, 7, 0.91);
+  --bs-btn-hover-border-color: rgba(255, 193, 7, 0.91);
+  --bs-btn-focus-shadow-rgb: 49, 132, 253;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #926e0a;
+  --bs-btn-active-border-color: rgba(255, 193, 7, 0.69);
+  --bs-btn-active-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #eeb108;
+  --bs-btn-disabled-border-color: rgba(255, 193, 7, 0.91);
+}
+
+.modal-header {
+  background-color: #121212; /* Couleur sombre */
+  color: #ffc107; /* Doré */
+  border-bottom: none;
+  padding: 1rem 1.5rem;
+}
+
+.modal-header .btn-close {
+  opacity: 0.8;
+}
+
+.modal-body {
+  background-color: #f8f9fa; /* Fond clair */
+  padding: 1.5rem 2rem;
+}
+
+.modal-footer {
+  border-top: none;
+  padding-top: 0;
+}
+
+.ng-select {
+  width: 100%;
+}
+
+.ng-select .ng-select-container {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  min-height: 38px;
+  font-size: 1rem;
+  box-shadow: none;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    border-color: #80bdff;
+    box-shadow: 0 0 4px rgba(128, 189, 255, 0.5);
+  }
+}
+
+.ng-select.ng-select-focused .ng-select-container {
+  border-color: #ffc107; /* Couleur dorée */
+  box-shadow: 0 0 4px rgba(255, 193, 7, 0.5);
+}
+
+.ng-dropdown-panel {
+  background-color: white;
+  border: 1px solid #ced4da;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Options dans le panel */
+.ng-dropdown-panel .ng-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #212529;
+
+  &:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+.ng-dropdown-panel .ng-option.ng-option-selected {
+  background-color: #ffc107;
+  color: white;
+}
+
+/* Placeholder pour ng-select */
+.ng-select .ng-placeholder {
+  color: #6c757d;
+  font-style: italic;
+}

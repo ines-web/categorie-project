@@ -1,11 +1,21 @@
-id;nom;creation_date
-1;ding groin groin;2024-10-13
-2;outre rassurer;2024-10-12
-3;durant;2024-10-13
-4;sincère;2024-10-12
-5;deçà;2024-10-13
-6;miaou meuh;2024-10-12
-7;juriste;2024-10-13
-8;lorsque auprès de;2024-10-12
-9;de peur de du côté de membre à vie;2024-10-12
-10;allonger jeune enfant;2024-10-13
+id;nom;creation_date;pid_parent_id
+1;Categorie_1;2022-03-15;
+2;Categorie_2;2021-09-28;
+3;Categorie_3;2022-11-07;
+4;Categorie_4;2020-05-19;
+5;Categorie_5;2021-12-03;
+6;Categorie_6;2022-07-22;3
+7;Categorie_7;2020-08-11;2
+8;Categorie_8;2023-01-30;5
+9;Categorie_9;2021-06-17;4
+10;Categorie_10;2022-10-09;7
+11;Categorie_11;2023-04-05;8
+12;Categorie_12;2021-02-14;6
+13;Categorie_13;2022-08-31;9
+14;Categorie_14;2020-11-26;1
+15;Categorie_15;2023-03-18;10
+16;Categorie_16;2021-07-09;13
+17;Categorie_17;2022-12-24;11
+18;Categorie_18;2020-09-03;15
+19;Categorie_19;2023-02-11;16
+20;Categorie_20;2021-10-20;14

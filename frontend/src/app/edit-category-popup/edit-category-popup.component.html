@@ -1,0 +1,56 @@
+<div class="modal show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content shadow rounded">
+      <!-- En-tête du Modal -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-pencil-square me-2"></i> Modifier la catégorie "{{ category?.nom }}"
+        </h5>
+        <button
+          type="button"
+          class="btn-close btn-close-white"
+          (click)="closePopup()"
+          aria-label="Fermer"
+        ></button>
+      </div>
+
+      <!-- Corps du Modal -->
+      <div class="modal-body">
+        <form *ngIf="editedCategory">
+          <!-- Champ Nom -->
+          <div class="form-group mb-3">
+            <label for="nom" class="form-label fw-semibold text-dark">Nom de la catégorie</label>
+            <input
+              type="text"
+              class="form-control shadow-sm"
+              id="nom"
+              [(ngModel)]="editedCategory.nom"
+              name="nom"
+              placeholder="Entrez le nom de la catégorie"
+              required
+            />
+          </div>
+        </form>
+      </div>
+
+      <!-- Pied du Modal -->
+      <div class="modal-footer d-flex justify-content-end gap-2">
+        <button
+          type="button"
+          class="btn btn-outline-secondary rounded-pill shadow-sm px-4"
+          (click)="closePopup()"
+        >
+          <i class="fas fa-times me-2"></i>Annuler
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary rounded-pill shadow-sm px-4"
+          (click)="onUpdate()"
+        >
+          <i class="fas fa-save me-2"></i>Mettre à jour
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-backdrop fade show"></div>

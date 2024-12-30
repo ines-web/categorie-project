@@ -1,1 +1,57 @@
-<app-kachel (click)="login()" [kachel]="kachel"></app-kachel>
+
+<div class="page-wrapper">
+  <!-- En-tête -->
+  <div class="content-container">
+    <header class="intro">
+      <h1 class="welcome-title">Bienvenue dans notre plateforme</h1>
+      <p class="intro-text">
+        Ce projet nous a permis d'améliorer nous compétances en
+      </p>
+    </header>
+
+    <!-- Section fonctionnalités -->
+    <section class="features-grid">
+      <article class="feature-card">
+        <div class="icon-wrapper">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h3 class="feature-title">Gestion des utilisateurs</h3>
+        <p class="feature-description">
+          Authentifier et gérer vos utilisateurs avec Keycloak.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="icon-wrapper">
+          <i class="fab fa-angular"></i>
+          <i class="fas fa-database"></i>
+        </div>
+        <h3 class="feature-title">Gestion des catégories</h3>
+        <p class="feature-description">
+          Se familiariser avec Angular et Spring Boot.
+        </p>
+      </article>
+
+      <article class="feature-card">
+        <div class="icon-wrapper">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <h3 class="feature-title">Git Flow</h3>
+        <p class="feature-description">
+          Améliorez la collaboration grâce à des workflows structurés.
+        </p>
+      </article>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta">
+      <button class="btn-primary" (click)="login()">Se connecter</button>
+    </div>
+  </div>
+</div>
+
+<!-- Footer avec style amélioré -->
+<footer class="footer">
+  <p>Développé avec ❤️ par <span>Ines</span> et <span>Amira</span></p>
+</footer>
+```

@@ -1,0 +1,57 @@
+/* Général pour le modal */
+.modal-content {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+.modal-header {
+  padding: 1rem 1.5rem;
+}
+
+.modal-header h5 {
+  margin: 0;
+}
+
+.btn-close-white {
+  filter: brightness(0) invert(1); /* Bouton de fermeture blanc */
+  opacity: 0.8;
+}
+
+.modal-footer {
+  padding-top: 0;
+}
+
+/* Champs du formulaire */
+.form-control {
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+  &:focus {
+    border-color: rgba(255, 193, 7, 0.91); /* Bleu clair */
+    box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+  }
+}
+
+/* Personnalisation des classes des boutons */
+.btn-primary {
+  background-color: #eeb108;
+  color: #fff;
+  border: none;
+
+  &:hover {
+    background-color: #ecc760;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border: 1px solid #6c757d;
+
+  &:hover {
+    background-color: #f8f9fa;
+    color: #52575c;
+  }
+}

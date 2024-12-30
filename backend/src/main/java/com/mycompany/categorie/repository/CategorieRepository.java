@@ -11,8 +11,14 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface CategorieRepository extends JpaRepository<Categorie, Long> {
+public interface CategorieRepository extends JpaRepository<Categorie, Long> , JpaSpecificationExecutor<Categorie>{
 
     @Query("SELECT c FROM Categorie c LEFT JOIN FETCH c.categories WHERE c.pidParent IS NULL")
     Page<Categorie> findRootCategoriesWithChildren(Pageable pageable);
+
+    @Modifying
+    @Query("UPDATE Categorie c SET c.pidParent = null WHERE c.pidParent.id = :parentId")
+    void detachChildCategories(Long parentId);
 }
+
+

@@ -1,17 +1,17 @@
 package com.mycompany.categorie.web.rest;
 
 import com.mycompany.categorie.domain.Categorie;
+import com.mycompany.categorie.exception.ResourceNotFoundException;
 import com.mycompany.categorie.service.dto.CategorieDTO;
 import com.mycompany.categorie.repository.CategorieRepository;
+import com.mycompany.categorie.specification.CategorieSpecification;
 import com.mycompany.categorie.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +29,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.PaginationUtil;
 import tech.jhipster.web.util.ResponseUtil;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 
 /**
  * REST controller for managing {@link com.mycompany.categorie.domain.Categorie}.
@@ -35,6 +40,7 @@ import tech.jhipster.web.util.ResponseUtil;
 @RequestMapping("/api/categories")
 @Transactional
 @CrossOrigin(origins = "http://localhost:4200")
+@Tag(name = "Gestion des Catégories", description = "API pour gérer les catégories (création, modification, suppression, recherche, association)")
 public class CategorieResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(CategorieResource.class);
@@ -57,13 +63,24 @@ public class CategorieResource {
      * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new categorie, or with status {@code 400 (Bad Request)} if the categorie has already an ID.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Créer une nouvelle catégorie",
+        description = "Permet de créer une nouvelle catégorie. Les informations obligatoires incluent le nom de la catégorie .")
     @PostMapping("")
     public ResponseEntity<Categorie> createCategorie(@Valid @RequestBody Categorie categorie) throws URISyntaxException {
         LOG.debug("REST request to save Categorie : {}", categorie);
+
         if (categorie.getId() != null) {
             throw new BadRequestAlertException("A new categorie cannot already have an ID", ENTITY_NAME, "idexists");
         }
+
+        // Ensure creation_date is set to the current date if not already provided
+        if (categorie.getCreation_date() == null) {
+            categorie.setCreation_date(LocalDate.now());
+        }
+
+        // Save the category
         categorie = categorieRepository.save(categorie);
+
         return ResponseEntity.created(new URI("/api/categories/" + categorie.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, categorie.getId().toString()))
             .body(categorie);
@@ -79,15 +96,19 @@ public class CategorieResource {
      * or with status {@code 500 (Internal Server Error)} if the categorie couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Mettre à jour une catégorie existante",
+        description = "Permet de modifier les champs d'une catégorie existante en fournissant un identifiant valide. Le système vérifie si la catégorie existe.")
     @PutMapping("/{id}")
-    public ResponseEntity<Categorie> updateCategorie(
+    public ResponseEntity<Void> updateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Categorie categorie
     ) throws URISyntaxException {
-        LOG.debug("REST request to update Categorie : {}, {}", id, categorie);
+        LOG.debug("REST request update Categorie : {}, {}", id, categorie);
+
         if (categorie.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+
         if (!Objects.equals(id, categorie.getId())) {
             throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
         }
@@ -96,10 +117,29 @@ public class CategorieResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        categorie = categorieRepository.save(categorie);
-        return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, categorie.getId().toString()))
-            .body(categorie);
+        Optional<Categorie> existingCategorieOpt = categorieRepository.findById(id);
+        if (existingCategorieOpt.isEmpty()) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Categorie existingCategorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+
+        if (categorie.getNom() != null) {
+            existingCategorie.setNom(categorie.getNom());
+        }
+
+        if (categorie.getPidParent() != null) {
+            Categorie parentCategorie = categorieRepository.findById(categorie.getPidParent().getId())
+                .orElseThrow(() -> new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound"));
+            existingCategorie.setPidParent(parentCategorie);
+        } else {
+            existingCategorie.setPidParent(null);
+        }
+
+        categorieRepository.save(existingCategorie);
+
+        return ResponseEntity.ok().headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 
     /**
@@ -113,6 +153,8 @@ public class CategorieResource {
      * or with status {@code 500 (Internal Server Error)} if the categorie couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
+    @Operation(summary = "Mettre à jour partiellement une catégorie",
+        description = "Permet de modifier certains champs d'une catégorie existante. Les champs non spécifiés conserveront leurs valeurs actuelles.")
     @PatchMapping(value = "/{id}", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Categorie> partialUpdateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
@@ -153,13 +195,77 @@ public class CategorieResource {
      * @param pageable the pagination information.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of categories in body.
      */
+    @Operation(summary = "Lister toutes les catégories",
+        description = """
+               Permet de rechercher des catégories avec plusieurs filtres :
+               - Si elles sont des catégories racines (estRacine)
+               - La date de création (après, avant, ou entre deux dates)
+               Possibilité de paginer et trier les résultats par nom, date ou nombre d'enfants.
+               """)
     @GetMapping("")
-    public ResponseEntity<List<CategorieDTO>> getAllCategories(@org.springdoc.core.annotations.ParameterObject Pageable pageable) {
-        LOG.debug("REST request to get a page of Categories");
-        Page<Categorie> page = categorieRepository.findAll(pageable);
+    public ResponseEntity<List<CategorieDTO>> getAllCategories(
+        @RequestParam(required = false) Boolean estRacine,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationApres,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationAvant,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationDebut,
+        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dateCreationFin,
+        @org.springdoc.core.annotations.ParameterObject Pageable pageable,
+        @RequestParam(defaultValue = "dateCreation") String sortBy, // Paramètre pour le tri
+        @RequestParam(defaultValue = "asc") String sortDirection
+    ) {
+        LOG.debug("REST request to get a page of Categories with filters");
 
-        // Transformation de la liste de catégories en DTO
-        List<CategorieDTO> categorieDTOs = page.getContent().stream().map(this::convertToDTO).collect(Collectors.toList());
+
+        Specification<Categorie> spec = Specification.where(null);
+
+
+        if (dateCreationApres != null) {
+            spec = spec.and(CategorieSpecification.dateCreationApres(dateCreationApres));
+        }
+
+
+        if (dateCreationAvant != null) {
+            spec = spec.and(CategorieSpecification.dateCreationAvant(dateCreationAvant));
+        }
+
+
+        if (dateCreationDebut != null && dateCreationFin != null) {
+            spec = spec.and(CategorieSpecification.dateCreationEntre(dateCreationDebut, dateCreationFin));
+        }
+
+
+        Page<Categorie> page = categorieRepository.findAll(spec, pageable);
+
+
+        List<CategorieDTO> categorieDTOs = page.getContent().stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+
+
+        // Filtrage post-requête pour estRacine
+        if (estRacine != null) {
+            categorieDTOs = categorieDTOs.stream()
+                .filter(dto -> dto.isEstRacine() == estRacine)
+                .collect(Collectors.toList());
+        }
+
+
+        if ("nombreEnfants".equals(sortBy)) {
+            Comparator<CategorieDTO> comparator = "desc".equals(sortDirection) ?
+                Comparator.comparing(CategorieDTO::getNombreEnfants).reversed() :
+                Comparator.comparing(CategorieDTO::getNombreEnfants);
+
+
+            categorieDTOs.sort(comparator);
+        } else {
+            // Tri sur d'autres attributs comme "dateCreation"
+            if ("desc".equals(sortDirection)) {
+                categorieDTOs.sort(Comparator.comparing(CategorieDTO::getDateCreation).reversed());
+            } else {
+                categorieDTOs.sort(Comparator.comparing(CategorieDTO::getDateCreation));
+            }
+        }
+
 
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(categorieDTOs);
@@ -184,19 +290,23 @@ public class CategorieResource {
 
         return categorieDTO;
     }
-
-    /**
-     * {@code GET  /categories/:id} : get the "id" categorie.
-     *
-     * @param id the id of the categorie to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the categorie, or with status {@code 404 (Not Found)}.
-     */
+    @Operation(summary = "Récupérer une catégorie par ID",
+        description = "Permet de récupérer les détails d'une catégorie par son identifiant unique. Les relations parent/enfant sont incluses.")
     @GetMapping("/{id}")
-    public ResponseEntity<Categorie> getCategorie(@PathVariable("id") Long id) {
-        LOG.debug("REST request to get Categorie : {}", id);
-        Optional<Categorie> categorie = categorieRepository.findById(id);
-        return ResponseUtil.wrapOrNotFound(categorie);
+    public ResponseEntity<CategorieDTO> getCategorieById(@PathVariable Long id) {
+        LOG.debug("REST request to get Category by ID : {}", id);
+
+        // Récupérer la catégorie par son ID
+        Categorie categorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'ID " + id + " n'existe pas."));
+
+        // Convertir la catégorie en DTO
+        CategorieDTO categorieDTO = convertToDTO(categorie);
+
+        return ResponseEntity.ok(categorieDTO);
     }
+
+
 
     /**
      * {@code DELETE  /categories/:id} : delete the "id" categorie.
@@ -204,10 +314,23 @@ public class CategorieResource {
      * @param id the id of the categorie to delete.
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
+    @Operation(summary = "Supprimer une catégorie",
+        description = "Permet de supprimer une catégorie existante par son identifiant. Les relations parent/enfant sont prises en compte.")
+    @Transactional
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategorie(@PathVariable("id") Long id) {
         LOG.debug("REST request to delete Categorie : {}", id);
+
+
+        Categorie categorie = categorieRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("La catégorie avec l'ID " + id + " n'existe pas."));
+
+        // Détacher les catégories enfants
+        categorieRepository.detachChildCategories(id);
+
+        // Supprimer la catégorie
         categorieRepository.deleteById(id);
+
         return ResponseEntity.noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString()))
             .build();
@@ -216,11 +339,8 @@ public class CategorieResource {
 
 
 
-    ////// mes inventions
-
-    //ECAT20
-    // URL : PUT /api/categories/{childId}/parent/{parentId}
-
+    @Operation(summary = "Associer une catégorie enfant à un parent",
+        description = "Permet d'associer une catégorie enfant à une catégorie parent en utilisant leurs identifiants respectifs. Une catégorie ne peut pas être son propre parent.")
     @PutMapping("/{childId}/parent/{parentId}")
     public ResponseEntity<Categorie> associateChildToParent(
         @PathVariable Long childId,
@@ -229,19 +349,14 @@ public class CategorieResource {
         LOG.debug("REST request to associate Categorie child : {} with parent : {}", childId, parentId);
 
         // Vérifier si les deux catégories existent
-        Optional<Categorie> childCategorieOpt = categorieRepository.findById(childId);
-        Optional<Categorie> parentCategorieOpt = categorieRepository.findById(parentId);
 
-        if (childCategorieOpt.isEmpty() || parentCategorieOpt.isEmpty()) {
-            throw new BadRequestAlertException("Parent or Child Categorie not found", ENTITY_NAME, "idnotfound");
-        }
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "childidnotfound"));
 
-        // Associer la catégorie parent à la catégorie enfant
-        Categorie childCategorie = childCategorieOpt.get();
-        Categorie parentCategorie = parentCategorieOpt.get();
+        Categorie parentCategorie = categorieRepository.findById(parentId)
+            .orElseThrow(() -> new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound"));
+
         childCategorie.setPidParent(parentCategorie);
-
-        // Sauvegarder la catégorie enfant avec son parent
         categorieRepository.save(childCategorie);
 
         return ResponseEntity.ok()
@@ -249,50 +364,51 @@ public class CategorieResource {
             .body(childCategorie);
     }
 
+    @Operation(summary = "Lister les parents potentiels pour une catégorie enfant",
+        description = "Permet de récupérer toutes les catégories qui peuvent devenir le parent d'une catégorie donnée. Empêche les boucles parent/enfant.")
+     @GetMapping("/potential-parents/{childId}")
+    public ResponseEntity<List<CategorieDTO>> getPotentialParents(@PathVariable Long childId) {
+        LOG.debug("REST request to get potential parent categories for child: {}", childId);
 
-    /// ECAT30
-    // URL : PATCH /api/categories/{id}
+        List<Categorie> allCategories = categorieRepository.findAll();
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child category not found", ENTITY_NAME, "idnotfound"));
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<Categorie> updateCategorieFields(
-        @PathVariable Long id,
-        @RequestBody Categorie categorieDetails
-    ) {
-        LOG.debug("REST request to partially update Categorie : {}", id);
+        List<CategorieDTO> potentialParents = allCategories.stream()
+            .filter(cat -> !isDescendantOf(cat, childCategorie) && !cat.getId().equals(childId))
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
 
-        // Vérifiez que l'ID du corps de la requête n'est pas nul
-        if (categorieDetails.getId() == null) {
-            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
-        }
+        return ResponseEntity.ok().body(potentialParents);
+    }
 
-        Optional<Categorie> existingCategorieOpt = categorieRepository.findById(id);
-
-        if (existingCategorieOpt.isEmpty()) {
-            throw new BadRequestAlertException("Categorie not found", ENTITY_NAME, "idnotfound");
-        }
-
-        Categorie existingCategorie = existingCategorieOpt.get();
-
-        // Mettre à jour le nom si un nouveau nom est fourni
-        if (categorieDetails.getNom() != null) {
-            existingCategorie.setNom(categorieDetails.getNom());
-        }
-
-        // Mettre à jour la catégorie parent si un nouvel ID parent est fourni
-        if (categorieDetails.getPidParent() != null && categorieDetails.getPidParent().getId() != null) {
-            Optional<Categorie> parentCategorieOpt = categorieRepository.findById(categorieDetails.getPidParent().getId());
-            if (parentCategorieOpt.isEmpty()) {
-                throw new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound");
+    private boolean isDescendantOf(Categorie potentialParent, Categorie child) {
+        Categorie current = child;
+        while (current.getPidParent() != null) {
+            if (current.getPidParent().getId().equals(potentialParent.getId())) {
+                return true;
             }
-            existingCategorie.setPidParent(parentCategorieOpt.get());
+            current = current.getPidParent();
         }
+        return false;
+    }
 
-        // Sauvegarder la catégorie mise à jour
-        Categorie updatedCategorie = categorieRepository.save(existingCategorie);
+    @Operation(summary = "Dissocier une catégorie enfant de son parent",
+        description = "Permet de dissocier une catégorie enfant de sa catégorie parent associée.")
+
+    @PutMapping("/{childId}/dissociate")
+    public ResponseEntity<Categorie> dissociateChildFromParent(@PathVariable Long childId) {
+        LOG.debug("REST request to dissociate Categorie child : {} from its parent", childId);
+
+        Categorie childCategorie = categorieRepository.findById(childId)
+            .orElseThrow(() -> new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "idnotfound"));
+
+        childCategorie.setPidParent(null);
+        categorieRepository.save(childCategorie);
 
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, existingCategorie.getId().toString()))
-            .body(updatedCategorie);
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, childCategorie.getId().toString()))
+            .body(childCategorie);
     }
 
 }

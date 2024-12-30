@@ -1,46 +1,109 @@
-<div class="container mt-3">
-  <h2>Tableau des catégories</h2>
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Nom</th>
-        <th>Date de Création</th>
-        <th>Nombre d'Enfants</th>
-        <th>Enfants</th>
-        <th>Actions</th> <!-- New column for actions -->
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let item of tableauData">
-        <td>{{ item.nom }}</td>
-        <td>{{ item.dateCreation | date:'dd/MM/yyyy' }}</td>
-        <td>{{ item.nombreEnfants }}</td>
-        <td>
-          <!-- Afficher les enfants, s'il y en a -->
-          <ul *ngIf="item.categoriesEnfants.length > 0">
-            <li *ngFor="let enfant of item.categoriesEnfants">
-              {{ enfant.nom }} 
-            </li>
-          </ul>
-          <!-- Si aucun enfant, afficher un message -->
-          <span *ngIf="item.categoriesEnfants.length === 0">Aucun enfant</span>
-        </td>
-        <td>
-          <!-- Action buttons (Edit, Delete, View, etc.) -->
-          <button class="btn btn-sm btn-primary" (click)="viewCategory(item)">
-            <i class="fas fa-eye"></i> <!-- View icon -->
-          </button>
-          <button class="btn btn-sm btn-warning" (click)="editCategory(item)">
-            <i class="fas fa-edit"></i> <!-- Edit icon -->
-          </button>
-          <button class="btn btn-sm btn-danger" (click)="deleteCategory(item)">
-            <i class="fas fa-trash-alt"></i> <!-- Delete icon -->
-          </button>
-          <button class="btn btn-sm btn-info" (click)="infoCategory(item)">
-            <i class="fas fa-info-circle"></i> <!-- Info icon -->
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<div class="container mt-4">
+  <!-- Section En-tête -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+
+    <button class="btn btn-warning btn-lg shadow-sm px-4 rounded-pill" (click)="openCreateCategoryPopup()">
+      <i class="fas fa-plus"></i> Ajouter une Catégorie
+    </button>
+  </div>
+
+  <!-- Barre de Recherche -->
+  <div class="card mb-4 shadow-sm">
+    <div class="card-body">
+      <app-categorie-search (searchEvent)="onSearch($event)"></app-categorie-search>
+    </div>
+  </div>
+
+  <!-- Tableau des Catégories -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-dark text-warning d-flex justify-content-between align-items-center">
+      <h5 class="mb-0 fw-bold">
+        <i class="fas fa-list me-2"></i> Liste des Catégories
+      </h5>
+      <small class="font-italic">Page actuelle : {{ page }}</small>
+    </div>
+    <div class="table-responsive">
+      <!-- Message si aucune catégorie -->
+      <div *ngIf="!tableauData || tableauData.length === 0" class="text-center my-4 text-secondary">
+        <p class="fw-bold">Aucune catégorie n'est enregistrée pour le moment.</p>
+      </div>
+
+      <!-- Tableau des Catégories -->
+      <table class="table table-hover text-center align-middle" *ngIf="tableauData && tableauData.length > 0">
+        <thead class="table-dark">
+        <tr>
+          <th>Nom <i class="fas fa-sort cursor-pointer" (click)="sortBy('nom')"></i></th>
+          <th>Date de Création <i class="fas fa-sort cursor-pointer" (click)="sortBy('dateCreation')"></i></th>
+          <th>Nombre d'Enfants <i class="fas fa-sort cursor-pointer" (click)="sortBy('nombreEnfants')"></i></th>
+          <th>Enfants</th>
+          <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of tableauData | paginate: { itemsPerPage: 10, currentPage: page }" class="bg-light">
+          <td class="fw-bold text-dark">{{ item.nom }}</td>
+          <td>{{ item.dateCreation | date:'dd/MM/yyyy' }}</td>
+          <td>{{ item.nombreEnfants }}</td>
+          <td>
+            <span *ngIf="item.categoriesEnfants.length === 0" class="badge bg-secondary">Aucun</span>
+            <div *ngIf="item.categoriesEnfants.length > 0">
+            <span
+              *ngFor="let enfant of item.categoriesEnfants"
+              class="badge bg-info text-dark me-1"
+            >
+              {{ enfant.nom }}
+            </span>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+              <button class="btn btn-outline-warning btn-sm" (click)="viewCategory(item)">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-outline-secondary btn-sm" (click)="editCategory(item)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm" (click)="deleteCategory(item)">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="btn btn-outline-success btn-sm" (click)="infoCategory(item)">
+                <i class="fas fa-link"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="card-footer d-flex justify-content-center">
+      <pagination-controls
+        (pageChange)="page = $event"
+        previousLabel="Précédent"
+        nextLabel="Suivant"
+      ></pagination-controls>
+    </div>
+  </div>
+
+  <!-- Popups -->
+  <app-create-category-popup
+    *ngIf="isPopupVisible"
+    (close)="closeCreateCategoryPopup()"
+    (categoryCreated)="onCategoryCreated()"
+  ></app-create-category-popup>
+
+  <app-associate-category-popup
+    *ngIf="isAssociatePopupVisible"
+    [childCategory]="selectedChild"
+    (close)="closeAssociatePopup()"
+    (associate)="onAssociateCategory($event)"
+  ></app-associate-category-popup>
+
+  <app-edit-category-popup
+    *ngIf="isEditPopupVisible"
+    [category]="selectedCategory"
+    (close)="closeEditCategoryPopup()"
+    (update)="onCategoryUpdated($event)"
+  ></app-edit-category-popup>
 </div>
