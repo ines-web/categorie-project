@@ -48,16 +48,15 @@ export class EditCategoryPopupComponent implements OnInit {
 
   onUpdate() {
     if (this.editedCategory) {
-      // Mise à jour du parent sélectionné
-      this.editedCategory.pidParent = this.selectedParentId 
-        ? this.potentialParents.find((parent) => parent.id === this.selectedParentId) || null
-        : null;
-
+      // Mise à jour du parent sélectionné avec l'ID
+      const parent = this.potentialParents.find((parent) => parent.id === this.selectedParentId);
+      this.editedCategory.pidParent = parent || null; // Garder l'objet parent ou null si inexistant
+      
       console.log('Catégorie mise à jour avant l\'envoi :', this.editedCategory);
-
+  
       // Émet l'événement pour mettre à jour la catégorie dans le composant parent
       this.update.emit(this.editedCategory);
-
+  
       // Met à jour la catégorie via le service
       this.categoryService.updateCategory(this.editedCategory).subscribe(
         (updatedCategory) => {
@@ -70,6 +69,7 @@ export class EditCategoryPopupComponent implements OnInit {
       );
     }
   }
+  
 
   onParentChange(event: number | null): void {
     console.log('Parent sélectionné :', event);
