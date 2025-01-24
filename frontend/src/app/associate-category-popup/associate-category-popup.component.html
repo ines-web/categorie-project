@@ -27,12 +27,14 @@
             <ng-select
               [items]="potentialParents"
               bindLabel="nom"
-              bindValue="id"
+              bindValue="id" 
               [(ngModel)]="selectedParentId"
+              (change)="selectCategory($event)"
               [searchable]="true"
               [clearable]="true"
               appendTo="body"
-              placeholder="Choisissez une catégorie parent"
+              [ngModelOptions]="{standalone: true}"
+              [placeholder]="customPlaceholder"
               class="form-control"
             >
               <!-- Template personnalisé pour le contenu des options -->
