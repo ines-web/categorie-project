@@ -98,7 +98,7 @@ public class CategorieResource {
      */
     @Operation(summary = "Mettre à jour une catégorie existante",
         description = "Permet de modifier les champs d'une catégorie existante en fournissant un identifiant valide. Le système vérifie si la catégorie existe.")
-    @PutMapping("/{id}")
+    @PatchMapping("/{id}")
     public ResponseEntity<Void> updateCategorie(
         @PathVariable(value = "id", required = false) final Long id,
         @Valid @RequestBody Categorie categorie
@@ -340,7 +340,7 @@ public class CategorieResource {
 
 
     @Operation(summary = "Associer une catégorie enfant à un parent",
-        description = "Permet d'associer une catégorie enfant à une catégorie parent en utilisant leurs identifiants respectifs. Une catégorie ne peut pas être son propre parent.")
+        description = "Permet d'associer une catégorie enfant à une catégorie parent en vérifiant les contraintes d'héritage.")
     @PutMapping("/{childId}/parent/{parentId}")
     public ResponseEntity<Categorie> associateChildToParent(
         @PathVariable Long childId,
@@ -348,13 +348,29 @@ public class CategorieResource {
     ) {
         LOG.debug("REST request to associate Categorie child : {} with parent : {}", childId, parentId);
 
-        // Vérifier si les deux catégories existent
-
         Categorie childCategorie = categorieRepository.findById(childId)
             .orElseThrow(() -> new BadRequestAlertException("Child Categorie not found", ENTITY_NAME, "childidnotfound"));
 
         Categorie parentCategorie = categorieRepository.findById(parentId)
             .orElseThrow(() -> new BadRequestAlertException("Parent Categorie not found", ENTITY_NAME, "parentidnotfound"));
+
+        // Vérification des contraintes d'héritage
+        if (isDescendantOf(parentCategorie, childCategorie)) {
+            throw new BadRequestAlertException(
+                "Cannot set a descendant as a parent",
+                ENTITY_NAME,
+                "invalid_parent_hierarchy"
+            );
+        }
+
+        // Vérification qu'une catégorie ne peut pas être son propre parent
+        if (childId.equals(parentId)) {
+            throw new BadRequestAlertException(
+                "A category cannot be its own parent",
+                ENTITY_NAME,
+                "self_parent_not_allowed"
+            );
+        }
 
         childCategorie.setPidParent(parentCategorie);
         categorieRepository.save(childCategorie);
@@ -365,27 +381,32 @@ public class CategorieResource {
     }
 
     @Operation(summary = "Lister les parents potentiels pour une catégorie enfant",
-        description = "Permet de récupérer toutes les catégories qui peuvent devenir le parent d'une catégorie donnée. Empêche les boucles parent/enfant.")
-     @GetMapping("/potential-parents/{childId}")
+        description = "Permet de récupérer toutes les catégories qui peuvent devenir le parent d'une catégorie donnée.")
+    @GetMapping("/potential-parents/{childId}")
     public ResponseEntity<List<CategorieDTO>> getPotentialParents(@PathVariable Long childId) {
         LOG.debug("REST request to get potential parent categories for child: {}", childId);
 
-        List<Categorie> allCategories = categorieRepository.findAll();
         Categorie childCategorie = categorieRepository.findById(childId)
             .orElseThrow(() -> new BadRequestAlertException("Child category not found", ENTITY_NAME, "idnotfound"));
 
+        List<Categorie> allCategories = categorieRepository.findAll();
+
         List<CategorieDTO> potentialParents = allCategories.stream()
-            .filter(cat -> !isDescendantOf(cat, childCategorie) && !cat.getId().equals(childId))
+            .filter(cat ->
+                !cat.getId().equals(childId) && // Exclure la catégorie elle-même
+                    !isDescendantOf(cat, childCategorie) && // Exclure les descendants
+                    !isDescendantOf(childCategorie, cat) // Exclure les ancêtres
+            )
             .map(this::convertToDTO)
             .collect(Collectors.toList());
 
         return ResponseEntity.ok().body(potentialParents);
     }
 
-    private boolean isDescendantOf(Categorie potentialParent, Categorie child) {
+    private boolean isDescendantOf(Categorie potentialAncestor, Categorie child) {
         Categorie current = child;
         while (current.getPidParent() != null) {
-            if (current.getPidParent().getId().equals(potentialParent.getId())) {
+            if (current.getPidParent().getId().equals(potentialAncestor.getId())) {
                 return true;
             }
             current = current.getPidParent();

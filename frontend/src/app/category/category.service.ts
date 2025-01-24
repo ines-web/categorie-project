@@ -80,6 +80,6 @@ export class CategoryService {
   }
 
   updateCategory(category: CategorieDTO): Observable<CategorieDTO> {
-    return this.http.put<CategorieDTO>(`${this.apiUrl}/${category.id}`, category);
+    return this.http.patch<CategorieDTO>(`${this.apiUrl}/${category.id}`, category);
   }
 }
