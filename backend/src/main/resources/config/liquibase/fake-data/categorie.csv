@@ -1,8 +1,8 @@
 id;nom;creation_date;pid_parent_id
-1;Categorie_1;2022-03-15;
-2;Categorie_2;2021-09-28;
-3;Categorie_3;2022-11-07;
-4;Categorie_4;2020-05-19;
+1;A;2022-03-15;
+2;B;2021-09-28;
+3;C;2022-11-07;
+4;D;2020-05-19;
 5;Categorie_5;2021-12-03;
 6;Categorie_6;2022-07-22;3
 7;Categorie_7;2020-08-11;2

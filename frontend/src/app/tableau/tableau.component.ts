@@ -144,10 +144,12 @@ export class TableauComponent implements OnInit {
   }
 
   onAssociateCategory(parentId: number | null): void {
+
+
     if (this.selectedChild) {
       this.categoryService.associateCategoryToParent(this.selectedChild.id, parentId).subscribe(
         () => {
-          console.log(`Catégorie ${this.selectedChild?.nom} ${parentId ? 'associée au parent avec ID ' + parentId : 'dissociée de son parent'}`);
+          console.log(`Catégorie ${this.selectedChild?.nom} ${parentId ? 'associée au parent avec ID ' + parentId : 'dissociée de son parent'+ parentId }`);
           this.loadCategories();
         },
         error => {
